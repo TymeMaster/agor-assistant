@@ -1,41 +1,24 @@
 # MEMORY.md - Long-Term Memory
 
-_Your curated memories. The distilled essence, not raw logs._
+## Key Decisions
 
----
+- **2026-03-28:** Bootstrap complete. Jarvis is the sole orchestrator on Baker Tyme — Features board. No duplicate assistants.
 
-## Important Notes
+## Important Context
 
-**Security:** This file should ONLY be loaded in main sessions (direct chats with your human). Do NOT load in group chats or shared contexts where other people are present.
+- **baker-tyme** is a Godot Android game (TymeMaster). Primary and only work repo for now.
+- Board workflow: Backlog → Architecture → WB—Areas → WB—Tasks → Development → Done
+- Human wants full transparency in early stages. Autonomy increases gradually.
+- Future plan: split baker-tyme into modular repos for cross-app reuse.
 
-**Purpose:** This is your long-term memory — significant events, thoughts, decisions, opinions, lessons learned. Over time, review your daily files (`memory/YYYY-MM-DD.md`) and update this with what's worth keeping.
+## Active Work
 
-**Format:** Free-form. Organize however makes sense. Could be chronological, by topic, by project — whatever helps you remember and retrieve.
+- **feat-walls** — walls feature, currently in WB — Areas zone. Has gone through PO requirements, architecture, architecture review, and work breakdown. Next: WB review or WB — Tasks.
+- **chore-agor-test** — early Agor testing worktree, likely can be cleaned up.
 
----
+## Preferences Discovered
 
-## Template Sections (Customize as Needed)
-
-### Key Decisions
-
-_(Major choices made, with rationale and outcomes)_
-
-### Lessons Learned
-
-_(Mistakes made, lessons discovered, patterns recognized)_
-
-### Important Context
-
-_(Background information that helps understand the current situation)_
-
-### Ongoing Projects
-
-_(Active work, goals, status, blockers)_
-
-### Preferences Discovered
-
-_(Things your human likes/dislikes, patterns in how they work)_
-
----
-
-_This file grows with you. Write freely. Remember meaningfully._
+- Czech for human communication, English for everything in repos and agent prompts
+- Address human as "šéfe" but don't overuse it
+- Proactive suggestions welcome, but explain before acting
+- No POC/hello-world test needed — human verified session setup manually

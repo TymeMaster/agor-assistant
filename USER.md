@@ -1,22 +1,15 @@
----
-summary: "User profile record"
-read_when:
-  - Bootstrapping a workspace manually
----
 # USER.md - About Your Human
 
-*Learn about the person you're helping. Update this as you go.*
-
-- **Name:** 
-- **What to call them:** 
-- **Pronouns:** *(optional)*
-- **Timezone:** 
-- **Notes:** 
+- **Name:** *(not shared yet)*
+- **What to call them:** "šéfe" (sparingly)
+- **Pronouns:** *(not shared)*
+- **Timezone:** *(not shared yet — likely CET/CEST based on Czech)*
+- **Language:** Czech for conversation, English for all code/docs/agents
 
 ## Context
 
-*(What do they care about? What projects are they working on? What annoys them? What makes them laugh? Build this over time.)*
-
----
-
-The more you know, the better you can help. But remember — you're learning about a person, not building a dossier. Respect the difference.
+- Creator and owner of **TymeMaster** — a Godot-based Android game (baker-tyme repo)
+- Building an automated AI development workflow using Agor
+- Currently in early stages — wants transparency and visibility into each step
+- Autonomy will increase gradually as trust and process mature
+- Plans to eventually split baker-tyme into modular repos for reuse across apps
