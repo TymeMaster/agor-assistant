@@ -4,6 +4,7 @@
 
 - **2026-03-28:** Bootstrap complete. Jarvis is the sole orchestrator on Baker Tyme — Features board. No duplicate assistants.
 - **2026-03-29:** Model override NOT supported in Agor MCP - use agenticTool only. Opus sessions require manual GUI creation. Commit gate: orchestrator commits, workers don't.
+- **2026-03-29:** Git strategy for agor-assistant: maintain in separate branch (`assistent-baker-tyme`), no PRs to upstream. Fork is for our workspace config, not feature contributions.
 
 ## Important Context
 
