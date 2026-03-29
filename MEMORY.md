@@ -3,6 +3,7 @@
 ## Key Decisions
 
 - **2026-03-28:** Bootstrap complete. Jarvis is the sole orchestrator on Baker Tyme — Features board. No duplicate assistants.
+- **2026-03-29:** Model override NOT supported in Agor MCP - use agenticTool only. Opus sessions require manual GUI creation. Commit gate: orchestrator commits, workers don't.
 
 ## Important Context
 
@@ -13,8 +14,33 @@
 
 ## Active Work
 
-- **feat-walls** — walls feature, currently in WB — Areas zone. Has gone through PO requirements, architecture, architecture review, and work breakdown. Next: WB review or WB — Tasks.
+- **feat-walls** — walls feature now has Area 1 closed and Area 2 completed/pushed. Current process next step: Area 3 planning, development, and then final complete integration review. Important: worktree still contains unrelated dirty files in `translations/*.translation` and one modified Task 1 summary artifact that were intentionally left out of Area 2 commits.
 - **chore-agor-test** — early Agor testing worktree, likely can be cleaned up.
+
+## Workflow Rules
+
+**Role-Model Mapping:**
+- Architect: claude-opus-4-6 (manual GUI creation)
+- Analyst: Codex (process review, consistency analysis)
+- Developer: claude-sonnet-4-5 (cost-efficient implementation)
+- Reviewer: Codex (thorough structured review)
+
+**Commit Gate:**
+- Board assistant or subsessions commit ALL code
+- Worker sessions (Developer/Reviewer) produce code, never commit
+- Avoids Codex sandbox git limitations
+
+**Subsession Best Practices:**
+- Use for parallel analytical work (research, review, analysis)
+- Codex excellent for structured analysis without tool use
+- Enable callback for completion notification
+- Spawn creates child with fresh context
+
+**Session Start Checklist:**
+1. Read SOUL.md, IDENTITY.md, USER.md, BOARD.md
+2. Read today + yesterday daily logs
+3. Sync Agor state (worktrees, sessions)
+4. Check relevant repos/ context files
 
 ## Preferences Discovered
 
