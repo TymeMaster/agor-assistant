@@ -15,7 +15,7 @@
 
 ## Active Work
 
-- **feat-walls** — walls feature now has Area 1 closed and Area 2 completed/pushed. Current process next step: Area 3 planning, development, and then final complete integration review. Important: worktree still contains unrelated dirty files in `translations/*.translation` and one modified Task 1 summary artifact that were intentionally left out of Area 2 commits.
+- **feat-walls** — ✅ DONE (2026-03-29). All 3 Areas complete, comprehensive test suite (335/335 passing), complete integration review approved. Ready for UAT and merge. Worktree moved to Done zone.
 - **chore-agor-test** — early Agor testing worktree, likely can be cleaned up.
 
 ## Workflow Rules
