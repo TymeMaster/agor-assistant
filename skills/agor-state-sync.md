@@ -18,8 +18,10 @@ Run all three calls:
 
 ```
 agor_worktrees_list          → all worktrees (no filter)
-agor_sessions_list           → boardId: "94ca6016-0117-46b6-91af-aa0263e209a9"
-                               status: "running" or "idle" (two separate calls)
+agor_sessions_list           → status: "running" (call 1)
+                               status: "idle" (call 2)
+                               ⚠️ Do NOT use boardId filter — it returns empty data (known bug)
+                               Filter by board locally in step 3 instead
 agor_repos_list              → all repos
 ```
 
@@ -76,11 +78,14 @@ Schema: clean snapshot of active sessions only. No history in this file.
 }
 ```
 
-**Filter:** Include only `running` and `idle` sessions. Exclude `completed` and `failed`.
+**Filter steps:**
+1. Status filter: Include only `running` and `idle` sessions (fetched separately in step 1)
+2. Board filter: Filter by `board_id` field matching Main Board ID from IDENTITY.md
+   - Sessions without `board_id` → exclude
+   - Sessions with different `board_id` → exclude
+   - Sessions with matching `board_id` → include
 
-**Scope:** Sessions filtered by `boardId` from IDENTITY.md. This is a conscious tradeoff — sessions moved outside the board won't appear. Document discrepancies in daily log if noticed.
-
-⚠️ **Known issue (confirmed 2026-04-03):** `agor_sessions_list` with `boardId` filter returns `data: []` despite non-zero `total`. Workaround: call without boardId filter, then filter locally by `worktree_board_id` field on each session.
+**Why local filtering:** `agor_sessions_list` boardId parameter returns empty data (confirmed bug 2026-04-03). Call without filter, filter locally instead.
 
 **Dedup rule:** If same `session_id` appears in both running and idle results, keep one entry (prefer running status).
 
