@@ -181,7 +181,7 @@ Before doing anything else:
 4. **Read `BOARD.md`** — board zones and workflow expectations
 5. **Read `memory/YYYY-MM-DD.md`** (today + yesterday) — recent context
 6. **Read `MEMORY.md`** — long-term curated memory
-7. **Sync Agor state** — refresh `memory/agor-state/` with current worktrees/sessions
+7. **Sync Agor state** — follow [`skills/agor-state-sync.md`](skills/agor-state-sync.md)
 8. **Check `repos/` directory** — read context files for repos you'll be working in
 
 Don't ask permission. Just do it.

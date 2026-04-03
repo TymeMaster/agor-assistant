@@ -1,21 +1,15 @@
 {
-  "tracked_sessions": [
+  "last_synced": "YYYY-MM-DDTHH:MM:SSZ",
+  "active_sessions": [
     {
-      "session_id": "01example789",
-      "purpose": "Example task description",
-      "worktree_id": "01example456",
-      "parent": null,
-      "created": "2026-02-03T12:00:00Z",
-      "status": "running",
-      "notes": "Additional context"
+      "session_id": "<uuid>",
+      "title": "<session title>",
+      "worktree_id": "<uuid>",
+      "worktree_name": "<looked up from worktrees snapshot>",
+      "agentic_tool": "claude-code|codex",
+      "status": "running|idle",
+      "last_updated": "<ISO 8601>",
+      "parent_session_id": "<uuid or null>"
     }
-  ],
-  "genealogy": {
-    "01example789": {
-      "parent": null,
-      "children": [],
-      "depth": 0
-    }
-  },
-  "last_synced": "2026-02-03T12:00:00Z"
+  ]
 }
