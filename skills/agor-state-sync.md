@@ -80,6 +80,8 @@ Schema: clean snapshot of active sessions only. No history in this file.
 
 **Scope:** Sessions filtered by `boardId` from IDENTITY.md. This is a conscious tradeoff — sessions moved outside the board won't appear. Document discrepancies in daily log if noticed.
 
+⚠️ **Known issue (confirmed 2026-04-03):** `agor_sessions_list` with `boardId` filter returns `data: []` despite non-zero `total`. Workaround: call without boardId filter, then filter locally by `worktree_board_id` field on each session.
+
 **Dedup rule:** If same `session_id` appears in both running and idle results, keep one entry (prefer running status).
 
 ### 4. Prepare `repos.json`
