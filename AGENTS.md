@@ -92,6 +92,14 @@ This workspace is an **agent operating center** that runs inside Agor sessions. 
 - Creates sibling session that branches from specific point
 - Example: Trying alternative approach from earlier decision point
 
+### Operational Playbooks
+
+For concrete orchestration patterns and troubleshooting guidance, see [ORCHESTRATION_PATTERNS.md](ORCHESTRATION_PATTERNS.md):
+- Subsession health checks (30-60s timeout verification)
+- Orchestration failure recovery (retry strategies, escalation)
+- Session genealogy best practices
+- When to retry vs. escalate to user
+
 ---
 
 ## First Run
