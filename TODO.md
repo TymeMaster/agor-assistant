@@ -44,7 +44,7 @@ Before starting integration review, verify worktree cleanliness:
 
 ---
 
-### A1. Agor State Sync at Session Start 🔴 HIGH
+### A1. Agor State Sync at Session Start ✅ DONE (2026-04-03)
 
 **What:** Automate sync of `memory/agor-state/*.json` when session starts
 
@@ -112,15 +112,9 @@ Before starting integration review, verify worktree cleanliness:
 
 ## 📋 Backlog - Fáze 3 (Long-term)
 
-### Memory Promotion Process
+### Memory Promotion Process ✅ DONE (2026-04-03)
 
-**What:** Weekly review of `memory/learnings/*.md` → extract to `MEMORY.md`
-
-**Where:** HEARTBEAT.md (add weekly task guidance)
-
-**Why:** Prevent learnings from staying buried in daily logs, promote to long-term memory
-
-**Effort:** ~20 minutes (documentation)
+Added to HEARTBEAT.md as weekly task with concrete steps.
 
 ---
 

@@ -66,10 +66,32 @@ Get your main board ID from IDENTITY.md, then:
 
 ## Memory Maintenance
 
-### Periodic Tasks
-- Review recent daily logs (`memory/YYYY-MM-DD.md`)
-- Update `MEMORY.md` with significant learnings
-- Sync `memory/agor-state/` with current Agor state
+### Weekly: Memory Promotion
+
+**When:** Once a week (or when `memory/learnings/` has 3+ new files since last promotion).
+
+**Goal:** Prevent learnings from staying buried in daily logs. Distill recurring patterns, discoveries, and preference updates into `MEMORY.md`.
+
+**Steps:**
+
+1. List all files in `memory/learnings/` — identify any not yet promoted
+2. Read each unpromoted file and ask: *Is this still true? Is it a repeating pattern or a one-off?*
+3. For each relevant learning, decide where it goes:
+   - New workflow rule → add to `MEMORY.md` under "Workflow Rules"
+   - User preference discovered → add to `MEMORY.md` under "Preferences Discovered"
+   - Architecture decision → add to `MEMORY.md` under "Key Decisions"
+   - Already captured elsewhere → skip
+4. Update `MEMORY.md` — edit existing entries rather than appending duplicates
+5. Mark promoted files by adding `_promoted` suffix or a header note
+6. Commit: `docs: promote learnings to MEMORY.md (YYYY-MM-DD)`
+
+**What NOT to promote:**
+- One-off incidents (session crashed, MCP disconnected)
+- Project-specific details already in `repos/*.md`
+- Raw debugging logs
+
+### Other Periodic Tasks
+- Sync `memory/agor-state/` with current Agor state (every session start — see `skills/agor-state-sync.md`)
 - Commit workspace changes if modified
 
 ---
