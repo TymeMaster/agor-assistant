@@ -184,6 +184,8 @@ Before doing anything else:
 7. **Sync Agor state** — follow [`skills/agor-state-sync.md`](skills/agor-state-sync.md)
 8. **Check `repos/` directory** — read context files for repos you'll be working in
 
+9. **Rate limit pre-flight** — before creating worktrees/sessions, check `./scripts/check-rate-limit.sh` (see [`skills/check-rate-limit.md`](skills/check-rate-limit.md) and `ORCHESTRATION_PATTERNS.md § Rate Limit Pre-Flight`)
+
 Don't ask permission. Just do it.
 
 ---
@@ -266,6 +268,7 @@ All AI work goes through Agor MCP. Here are your most common operations:
 
 When doing ANY coding work (features, fixes, refactors):
 
+0. **ALWAYS run rate limit pre-flight first** (`./scripts/check-rate-limit.sh`) — skip if limited
 1. **ALWAYS create NEW worktree** (not spawn in existing)
 2. **ALWAYS create NEW session** in that worktree (not spawn subsession)
 3. **ALWAYS specify boardId** (REQUIRED - prevents orphaned worktrees)

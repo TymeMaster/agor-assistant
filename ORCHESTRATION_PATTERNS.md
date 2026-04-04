@@ -107,6 +107,60 @@ memory/YYYY-MM-DD.md:
 - Outcome: [success / escalated to user]
 ```
 
+## Rate Limit Pre-Flight
+
+Before spawning sessions or creating worktrees for coding work, check rate limit status. This prevents wasted resources when the API is throttled.
+
+**Skill reference:** [`skills/check-rate-limit.md`](skills/check-rate-limit.md)
+
+### When to Check
+
+| Actor | When | How |
+|-------|------|-----|
+| Orchestrator (Opus) | Before creating worktree + session | `./scripts/check-rate-limit.sh` |
+| PM (Sonnet) | Before each push cycle | `./scripts/check-rate-limit.sh` |
+| TL (Sonnet) | Before spawning worker sessions | `./scripts/check-rate-limit.sh` |
+| Workers | Never (they hit limits naturally) | — |
+
+### Action Matrix
+
+| State | Detection | Action |
+|-------|-----------|--------|
+| **OK** | `status=allowed`, no overage | Proceed normally |
+| **Warning** | `status=allowed_warning` | Finish in-progress work, avoid new spawns, prefer cheap models |
+| **Overage** | `isUsingOverage=true`, `overageStatus=allowed` | Conserve — batch work, avoid exploratory spawns |
+| **5h limit** | `status=rejected`, `overageStatus=allowed` | Minimal ops only — no new spawns, wait for reset |
+| **All exhausted** | `status=rejected`, `overageStatus=rejected` | Full stop — notify user, defer all work |
+| **Unknown** | Script failed | Treat as Warning (cautious) |
+
+### Integration Pattern
+
+```bash
+# In orchestrator/TL/PM before spawning work:
+RATE_JSON=$(./scripts/check-rate-limit.sh 2>/dev/null)
+STATUS=$(echo "$RATE_JSON" | jq -r '.status')
+
+if [ "$STATUS" = "rejected" ]; then
+  # Log and skip — do not spawn
+  echo "Rate limited, deferring work"
+  exit 0
+fi
+
+if [ "$STATUS" = "allowed_warning" ]; then
+  # Conserve — only proceed if work is critical
+  echo "Rate warning — proceeding with caution"
+fi
+```
+
+### Logging
+
+Add to daily log after each check:
+```
+[HH:MM] Rate limit: <STATE> (resets in Xh Ym, overage: yes/no)
+```
+
+---
+
 ## Session Genealogy Best Practices
 
 **Parent-Child Relationships:**

@@ -6,41 +6,16 @@
 
 ## ⏳ Fáze 2: Process Hardening (Zbývá)
 
-### B3. Hygiene Gates - Integration Review 🟡 MEDIUM
+### B3. Hygiene Gates - Integration Review ✅ DONE (2026-04-04)
 
-**What:** Add pre-review checklist to Integration Review workflow
+Pre-review checklist already present in `AI_WORKFLOW__INTEGRATION_REVIEW_TASK.md` (added during 2026-04-03 session).
 
-**Where:** `baker-tyme/chore-agor-test/ai/workflow/AI_WORKFLOW__INTEGRATION_REVIEW_TASK.md`
+### B4. Rate Limit Pre-Flight Integration ✅ DONE (2026-04-04)
 
-**Content to add:**
-```markdown
-## Pre-Review Checklist
-
-Before starting integration review, verify worktree cleanliness:
-
-- [ ] Run `git status` - check for unstaged/untracked files
-- [ ] Categorize unstaged files:
-  - Related to current area → stage and include in review
-  - Unrelated artifacts → stash, commit separately, or delete
-  - Build artifacts (translations, .uid) → usually safe to leave unstaged
-- [ ] Document exceptions: if leaving files unstaged, note why in review
-
-**Stash strategy:**
-- Named stash: `git stash push -m "Area N deferred items" file1 file2`
-- Retrieve later: `git stash list`, `git stash apply stash@{N}`
-
-**Separate commit strategy:**
-- Create WIP commit for orphaned files: `git commit -m "WIP: orphaned files from Area N"`
-- Mark for manual review during UAT
-
-**Delete strategy:**
-- Only delete if certain file is stale/wrong
-- Prefer stash over delete (recoverable)
-```
-
-**Effort:** ~15 minutes (inline edit)
-
-**Why:** During feat-walls, dirty worktree carried files across areas → confusion, commit risk. Hygiene gate prevents this.
+Integrated `scripts/check-rate-limit.sh` into orchestration workflow:
+- `ORCHESTRATION_PATTERNS.md` — new "Rate Limit Pre-Flight" section with action matrix
+- `AGENTS.md` — step 0 in coding work isolation pattern, step 9 in session start checklist
+- Skill reference: `skills/check-rate-limit.md`
 
 ---
 
