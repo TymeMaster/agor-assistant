@@ -23,11 +23,14 @@ if [[ "${1:-}" == "--human" ]]; then
     HUMAN_MODE=true
 fi
 
-# Minimal prompt to minimize token cost
-RAW=$(timeout 60 claude -p --output-format stream-json --verbose "ok" 2>/dev/null) || {
-    echo '{"error":"claude command failed"}' >&2
+# Minimal prompt to minimize token cost.
+# Note: claude may exit non-zero when rate-limited, but still emits stream events.
+RAW=$(timeout 60 claude -p --output-format stream-json --verbose "ok" 2>/dev/null || true)
+
+if [[ -z "$RAW" ]]; then
+    echo '{"error":"claude command returned no output"}' >&2
     exit 1
-}
+fi
 
 # Extract rate_limit_event
 RATE_INFO=$(echo "$RAW" | python3 -c "
