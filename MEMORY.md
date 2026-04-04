@@ -18,24 +18,32 @@
 - **feat-walls** — ✅ DONE (2026-03-29). All 3 Areas complete, comprehensive test suite (335/335 passing), complete integration review approved. Ready for UAT and merge. Worktree moved to Done zone.
 - **chore-agor-test** — early Agor testing worktree, likely can be cleaned up.
 
-## Workflow Rules
+## Orchestration Model (decided 2026-04-04)
 
-**Role-Model Mapping:**
-- Architect: claude-opus-4-6 (manual GUI creation)
-- Analyst: Codex (process review, consistency analysis)
-- Developer: claude-sonnet-4-5 (cost-efficient implementation)
-- Reviewer: Codex (thorough structured review)
+**3-Layer Architecture** — full design in `memory/2026-04-04-orchestration-design.md`
+
+| Layer | Role | Model | Behavior |
+|-------|------|-------|----------|
+| 1 | Orchestrator (Jarvis) | Opus (manual GUI) | PASSIVE — delegates, never implements |
+| 2a | Team Lead (per Area) | Sonnet | AUTONOMOUS — owns Area, delegates + commits |
+| 2b | Project Manager | Sonnet | Heartbeat controller, pushes stalled TLs |
+| 3 | Workers | Sonnet (dev) / Codex (review) | Execute tasks in isolated worktrees |
+
+**Primary constraint:** Token optimization. Opus stays thin, Sonnet coordinates, Codex analyzes.
+
+**PM triggering:** Manual (by Opus or human) via `agor_sessions_prompt`. Automated cron not available (5 mechanisms tested, all failed — see design doc).
+
+**Experimentally verified (2026-04-04):**
+- Sonnet sessions have full Agor MCP access (38 tools) ✅
+- Callback chain TL → Worker → TL works (< 60s) ✅
+- PM can poll session status + push stalled sessions ✅
 
 **Commit Gate:**
-- Board assistant or subsessions commit ALL code
-- Worker sessions (Developer/Reviewer) produce code, never commit
-- Avoids Codex sandbox git limitations
+- Team Lead (Sonnet) commits ALL code in its Area
+- Workers (Sonnet/Codex) produce code, never commit
+- Codex cannot commit (sandbox limitation)
 
-**Subsession Best Practices:**
-- Use for parallel analytical work (research, review, analysis)
-- Codex excellent for structured analysis without tool use
-- Enable callback for completion notification
-- Spawn creates child with fresh context
+**Context Exhaustion:** TL persists state to file → escalates to Opus → Opus creates replacement TL with resumé → updates PM with new session ID
 
 **Session Start Checklist:**
 1. Read SOUL.md, IDENTITY.md, USER.md, BOARD.md

@@ -15,6 +15,11 @@
 # Output (JSON mode):
 #   {"status":"allowed","resetsAt":1775296800,"rateLimitType":"five_hour",
 #    "overageStatus":"allowed","overageResetsAt":1777593600,"isUsingOverage":false}
+#
+# Implementation notes:
+#   - Runs from /tmp to avoid picking up CLAUDE.md (which causes agent startup → timeout)
+#   - Cannot use --bare (it suppresses rate_limit_event from stream output)
+#   - Uses standard mode with minimal prompt for cheapest possible probe
 
 set -euo pipefail
 
@@ -23,9 +28,9 @@ if [[ "${1:-}" == "--human" ]]; then
     HUMAN_MODE=true
 fi
 
-# Minimal prompt to minimize token cost.
-# Note: claude may exit non-zero when rate-limited, but still emits stream events.
-RAW=$(timeout 60 claude -p --output-format stream-json --verbose "ok" 2>/dev/null || true)
+# Run from /tmp to avoid CLAUDE.md in cwd triggering agent startup behavior.
+# Standard mode required — --bare suppresses rate_limit_event.
+RAW=$(cd /tmp && timeout 30 claude -p --output-format stream-json --verbose "ok" 2>/dev/null || true)
 
 if [[ -z "$RAW" ]]; then
     echo '{"error":"claude command returned no output"}' >&2
@@ -66,7 +71,6 @@ from datetime import datetime, timezone
 info = json.loads(sys.stdin.read())
 
 status = info.get('status', '?')
-rate_type = info.get('rateLimitType', '?')
 resets_at = info.get('resetsAt', 0)
 overage = info.get('isUsingOverage', False)
 overage_status = info.get('overageStatus', '?')
@@ -78,7 +82,7 @@ def fmt_ts(ts):
     dt = datetime.fromtimestamp(ts, tz=timezone.utc)
     return dt.strftime('%Y-%m-%d %H:%M UTC')
 
-def minutes_until(ts):
+def time_until(ts):
     if not ts:
         return '?'
     now = datetime.now(timezone.utc).timestamp()
@@ -106,8 +110,8 @@ else:
     icon = '[STOP]'
 
 print(f'{icon} {state}')
-print(f'  5h window:  {status} (resets in {minutes_until(resets_at)}, at {fmt_ts(resets_at)})')
-print(f'  Weekly:     {overage_status} (resets in {minutes_until(overage_resets)}, at {fmt_ts(overage_resets)})')
+print(f'  5h window:  {status} (resets in {time_until(resets_at)}, at {fmt_ts(resets_at)})')
+print(f'  Weekly:     {overage_status} (resets in {time_until(overage_resets)}, at {fmt_ts(overage_resets)})')
 print(f'  Overage:    {\"yes\" if overage else \"no\"}')
 "
 else

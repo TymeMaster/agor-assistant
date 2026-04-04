@@ -298,11 +298,16 @@ After experiments:
 - **Conclusion:** PM heartbeat pattern is fully viable.
 
 ### Exp.4: Cron PM
-- **Status:** NOT YET RUN
-- **Result:** —
-- **Notes:**
-  - `RemoteTrigger` (Anthropic cloud): HTTP 500, nemá přístup k lokálnímu Agor MCP → NEPOUŽITELNÝ
-  - `CronCreate` (session-scoped): Job se vytvoří ale nefiruje. Vyžaduje REPL idle, job se sám odstraní → NESPOLEHLIVÝ
-  - Agor `schedule_enabled`: Pole na worktrees existuje, ale chybí MCP API pro aktivaci → NEIMPLEMENTOVÁNO
-  - Zbývá otestovat: CronCreate durable:true, /loop skill, Agor-native scheduling (dotaz na Agor tým)
-  - Prozatímní fallback: PM triggeruje Opus/human manuálně přes agor_sessions_prompt
+- **Status:** DONE — žádný automatický cron mechanismus nefunguje v tomto prostředí
+- **Result:** FAIL — automatický PM heartbeat zatím není realizovatelný
+- **Tested mechanisms (all failed):**
+  - `RemoteTrigger` (Anthropic cloud): HTTP 500 + nemá přístup k lokálnímu Agor MCP → NEPOUŽITELNÝ
+  - `CronCreate` (session-scoped): Joby se vytvoří ale nikdy nefirují, samy zmizí → NEFUNKČNÍ
+  - `CronCreate durable:true`: Ignoruje durable flag, chová se jako session-only → NEFUNKČNÍ
+  - `/loop` skill: Wrapper nad CronCreate, stejný problém → NEFUNKČNÍ
+  - Agor `schedule_enabled`: Pole existuje na worktrees, chybí MCP API → NEIMPLEMENTOVÁNO
+- **Root cause:** CronCreate vyžaduje REPL v idle stavu. V Agor-managed sessions se tento stav buď nedosahuje, nebo joby předčasně expirují.
+- **Doporučení pro PM roli:**
+  1. **Krátkodobě:** PM triggeruje human nebo Opus manuálně přes `agor_sessions_prompt` (ověřeno v Exp.3)
+  2. **Střednědobě:** Zeptat se Agor týmu na `schedule_enabled` API a worktree-level scheduling
+  3. **Dlouhodobě:** Systémový cron (Linux) volající Agor API přímo, mimo Claude session
