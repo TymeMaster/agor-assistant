@@ -39,26 +39,29 @@ If it fails (exit code 1), log the error and assume **unknown state** — do not
 
 ### 2. Parse the result
 
-JSON fields:
+JSON fields (vary by state — not all fields present in every response):
 
 | Field | Values | Meaning |
 |-------|--------|---------|
-| `status` | `allowed` / `rejected` | 5-hour window status |
+| `status` | `allowed` / `allowed_warning` / `rejected` | 5-hour window status |
 | `rateLimitType` | `five_hour` | Always this value |
 | `resetsAt` | unix timestamp | When 5h window resets |
+| `utilization` | 0.0–1.0 (optional) | Usage fraction; present in `allowed_warning` state |
+| `surpassedThreshold` | 0.0–1.0 (optional) | Warning threshold crossed; present in `allowed_warning` |
 | `isUsingOverage` | `true` / `false` | Currently in overage zone |
-| `overageStatus` | `allowed` / `rejected` | Weekly/billing limit status |
-| `overageResetsAt` | unix timestamp | When weekly limit resets |
+| `overageStatus` | `allowed` / `rejected` (optional) | Weekly/billing limit; absent in `allowed_warning` |
+| `overageResetsAt` | unix timestamp (optional) | When weekly limit resets; absent in `allowed_warning` |
 
 ### 3. Decide action based on state
 
 | State | Detection | Action |
 |-------|-----------|--------|
 | **OK** | `status=allowed`, `isUsingOverage=false` | Normal operation — spawn freely |
+| **Warning** | `status=allowed_warning` | Conserve — finish in-progress work, avoid new spawns, prefer cheap models |
 | **Overage** | `isUsingOverage=true`, `overageStatus=allowed` | Conserve — prefer Sonnet/Haiku, batch work, avoid exploratory spawns |
 | **5h limit hit** | `status=rejected`, `overageStatus=allowed` | Minimal ops only — finish in-progress work, no new spawns, wait for reset |
 | **All exhausted** | `status=rejected`, `overageStatus=rejected` | Full stop — log state, notify user, defer all work |
-| **Unknown** | Script failed | Treat as Overage (cautious but not blocked) |
+| **Unknown** | Script failed or unrecognized status | Treat as Warning (cautious but not blocked) |
 
 ### 4. Log the result
 

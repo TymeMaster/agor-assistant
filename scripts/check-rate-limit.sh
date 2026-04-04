@@ -12,9 +12,13 @@
 #   0 — success, rate limit info retrieved
 #   1 — failed to retrieve rate limit info
 #
-# Output (JSON mode):
-#   {"status":"allowed","resetsAt":1775296800,"rateLimitType":"five_hour",
-#    "overageStatus":"allowed","overageResetsAt":1777593600,"isUsingOverage":false}
+# Output (JSON mode) — fields vary by state:
+#   OK:      {"status":"allowed","resetsAt":...,"rateLimitType":"five_hour",
+#             "overageStatus":"allowed","overageResetsAt":...,"isUsingOverage":false}
+#   Warning: {"status":"allowed_warning","resetsAt":...,"rateLimitType":"five_hour",
+#             "utilization":1,"surpassedThreshold":0.9,"isUsingOverage":false}
+#   Limited: {"status":"rejected","resetsAt":...,"rateLimitType":"five_hour",
+#             "overageStatus":"allowed","overageResetsAt":...,"isUsingOverage":true}
 #
 # Implementation notes:
 #   - Runs from /tmp to avoid picking up CLAUDE.md (which causes agent startup → timeout)
@@ -30,7 +34,8 @@ fi
 
 # Run from /tmp to avoid CLAUDE.md in cwd triggering agent startup behavior.
 # Standard mode required — --bare suppresses rate_limit_event.
-RAW=$(cd /tmp && timeout 30 claude -p --output-format stream-json --verbose "ok" 2>/dev/null || true)
+# Explicit --model haiku to ensure cheapest possible probe (~$0.004).
+RAW=$(cd /tmp && timeout 30 claude -p --model haiku --output-format stream-json --verbose "ok" 2>/dev/null || true)
 
 if [[ -z "$RAW" ]]; then
     echo '{"error":"claude command returned no output"}' >&2
@@ -75,6 +80,8 @@ resets_at = info.get('resetsAt', 0)
 overage = info.get('isUsingOverage', False)
 overage_status = info.get('overageStatus', '?')
 overage_resets = info.get('overageResetsAt', 0)
+utilization = info.get('utilization')
+threshold = info.get('surpassedThreshold')
 
 def fmt_ts(ts):
     if not ts:
@@ -99,20 +106,34 @@ def time_until(ts):
 if status == 'allowed' and not overage:
     state = 'OK'
     icon = '[OK]'
+elif status == 'allowed_warning':
+    state = f'WARNING (utilization: {utilization or \"?\"})'
+    icon = '[WARN]'
 elif status == 'allowed' and overage:
     state = 'OVERAGE (within weekly limit)'
     icon = '[WARN]'
-elif overage_status == 'allowed':
+elif status == 'rejected' and overage_status == 'allowed':
     state = '5H LIMIT HIT (overage available)'
-    icon = '[WARN]'
-else:
+    icon = '[LIMIT]'
+elif status == 'rejected':
     state = 'ALL LIMITS EXHAUSTED'
     icon = '[STOP]'
+else:
+    state = f'UNKNOWN ({status})'
+    icon = '[?]'
+
+util_line = ''
+if utilization is not None:
+    pct = int(utilization * 100)
+    util_line = f'\n  Usage:      {pct}%'
+    if threshold is not None:
+        util_line += f' (warning threshold: {int(threshold * 100)}%)'
 
 print(f'{icon} {state}')
 print(f'  5h window:  {status} (resets in {time_until(resets_at)}, at {fmt_ts(resets_at)})')
-print(f'  Weekly:     {overage_status} (resets in {time_until(overage_resets)}, at {fmt_ts(overage_resets)})')
-print(f'  Overage:    {\"yes\" if overage else \"no\"}')
+if overage_status != '?':
+    print(f'  Weekly:     {overage_status} (resets in {time_until(overage_resets)}, at {fmt_ts(overage_resets)})')
+print(f'  Overage:    {\"yes\" if overage else \"no\"}{util_line}')
 "
 else
     echo "$RATE_INFO"
