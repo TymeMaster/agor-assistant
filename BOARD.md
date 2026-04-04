@@ -69,12 +69,19 @@ Each transition includes a human review/approval gate.
 
 ---
 
-## Current Board State (2026-03-28)
+## Current Board State (2026-04-04)
 
 ### Active Worktrees
 
 | Worktree | Repo | Zone | Status |
 |---|---|---|---|
-| `chore-agor-test` | baker-tyme | *(no zone)* | Testing worktree, 2 sessions |
-| `feat-walls` | baker-tyme | WB — Areas | Feature in work breakdown phase, 5 sessions |
+| `chore-agor-test` | baker-tyme | *(no zone)* | Early Agor testing worktree, candidate for cleanup |
+| `feat-walls` | baker-tyme | Done | Feature complete (335/335 tests passing), ready for UAT and merge |
 | `assistent-baker-tyme` | agor-assistant | *(no zone)* | This orchestrator (Jarvis) |
+
+### Experiment Worktrees (safe to delete)
+
+| Worktree | Notes |
+|---|---|
+| `exp1-tl-test` | Orchestration model experiment — TL + PM sessions |
+| `exp1-worker-test` | Created by TL in Exp.1 |

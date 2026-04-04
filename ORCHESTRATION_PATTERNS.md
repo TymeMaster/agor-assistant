@@ -2,6 +2,58 @@
 
 > Guidance for Board Assistant when orchestrating multi-session AI workflows through Agor MCP.
 
+## 3-Layer Orchestration Model
+
+All AI work follows a 3-layer delegation model. Full design details in `memory/2026-04-04-orchestration-design.md`.
+
+```
+Human Leader
+  │
+  ▼
+Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
+  │  Delegates work, never implements. Communication gate with human.
+  │
+  ├── Layer 2b: SONNET PM — MANUAL TRIGGER
+  │     Monitors TL progress, pushes stalled sessions.
+  │     Triggered by Opus or human (no automated cron available).
+  │     Escalates to Opus after 2x failed push.
+  │
+  ├── Layer 2a: SONNET TL (per Area) — AUTONOMOUS
+  │     │  Full ownership of one Area. Delegates to workers, commits results.
+  │     │  Persists state to file for context exhaustion resilience.
+  │     │
+  │     ├── Layer 3: Codex Worker (analysis/review)
+  │     ├── Layer 3: Sonnet Worker (development)
+  │     └── Layer 3: Codex Worker (integration review)
+  │
+  └── Layer 2a: SONNET TL (another Area) — same structure
+```
+
+### Key Rules
+
+| Rule | Detail |
+|------|--------|
+| **Opus is passive** | Never polls, never monitors — only reacts to callbacks/prompts |
+| **TL commits all code** | Workers produce changes, TL reviews and commits (commit gate) |
+| **Codex can't commit** | Sandbox limitation — every branch needs ≥1 Sonnet session |
+| **PM triggers manually** | Via `agor_sessions_prompt(mode='continue')` by Opus or human |
+| **Token optimization** | Primary design constraint — Opus stays thin, Sonnet coordinates |
+
+### Skills for Spawning
+
+- **Team Lead:** [`skills/spawn-team-lead.md`](skills/spawn-team-lead.md) — prompt template, worktree setup, error handling
+- **Project Manager:** [`skills/spawn-project-manager.md`](skills/spawn-project-manager.md) — prompt template, triggering cadence, push protocol
+
+### Context Exhaustion Recovery
+
+When a TL runs out of context:
+1. TL persists state to `ai/tasks/<feature>-tl-state.md`
+2. TL reports: "Context exhausted, state at [path]"
+3. Orchestrator creates replacement TL with state file as context
+4. Orchestrator updates PM with new TL session ID
+
+---
+
 ## Subsession Health Checks
 
 ### Post-Spawn Verification (30-60s timeout)
