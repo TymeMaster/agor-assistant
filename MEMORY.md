@@ -19,7 +19,7 @@
 
 - **feat-walls** — ✅ DONE (2026-03-29). All 3 Areas complete, comprehensive test suite (335/335 passing), complete integration review approved. Ready for UAT and merge. Worktree moved to Done zone.
 - **chore-agor-test** — early Agor testing worktree, likely can be cleaned up.
-- **docs/reviewer-final-gate** — `baker-tyme` docs/process cleanup PR: https://github.com/TymeMaster/baker-tyme/pull/21 targeting `develop`. Recreated on top of `origin/develop` after the initial `origin/main` baseline mistake; replaces closed PR #20 from non-compliant branch `docs-reviewer-final-gate`. Checks are green and PR is mergeable. Backup of old `origin/main`-based version: `backup/docs-reviewer-final-gate`.
+- **docs/reviewer-final-gate** — ✅ MERGED (2026-04-06). `baker-tyme` docs/process cleanup PR #21 merged into `develop`: https://github.com/TymeMaster/baker-tyme/pull/21. Replaced closed PR #20 from non-compliant branch `docs-reviewer-final-gate`. Branches `docs/reviewer-final-gate`, `docs-reviewer-final-gate`, and `backup/docs-reviewer-final-gate` cleaned up; Agor worktree retained detached at `origin/develop` pending explicit worktree removal.
 
 ## Orchestration Model (decided 2026-04-04)
 
@@ -52,7 +52,7 @@
 ## Open Process Follow-ups
 
 - `memory/agor-state/*.json` policy: resolved as ephemeral operational cache, not persistent source of truth. Use it for short-term handoff/restart protection only; verify current resource state through Agor MCP before acting.
-- `docs/reviewer-final-gate`: after PR #21 merge/closure, clean up `backup/docs-reviewer-final-gate`, `docs/reviewer-final-gate`, and the worktree if no longer needed.
+- `docs-reviewer-final-gate` Agor worktree: PR #21 is merged and branches are cleaned up. Remove the worktree only after explicit user confirmation.
 
 **Session Start Checklist:**
 1. Read SOUL.md, IDENTITY.md, USER.md, BOARD.md

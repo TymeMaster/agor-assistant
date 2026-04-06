@@ -16,8 +16,9 @@ Status from workflow cleanup review:
 - ✅ Agor state snapshot freshness resolved as policy: `memory/agor-state/*.json` is an ephemeral operational cache, not persistent source of truth. It may be incomplete/stale/uncommitted; verify current resource state through Agor MCP before acting.
 
 Next actions:
-- PR #21 is open against `develop`: https://github.com/TymeMaster/baker-tyme/pull/21
-- After merge/closure, clean up `backup/docs-reviewer-final-gate`, `docs/reviewer-final-gate`, and the worktree.
+- PR #21 merged into `develop`: https://github.com/TymeMaster/baker-tyme/pull/21
+- Branch cleanup complete (`docs/reviewer-final-gate`, `docs-reviewer-final-gate`, `backup/docs-reviewer-final-gate`).
+- Optional: remove the `docs-reviewer-final-gate` Agor worktree only after explicit user confirmation.
 
 ### B3. Hygiene Gates - Integration Review ✅ DONE (2026-04-04)
 
