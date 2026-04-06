@@ -5,7 +5,7 @@
 Brainstorming session with human leader to optimize token usage and orchestration efficiency.
 Goal: Multi-layer model isolating competencies, minimizing Opus token burn.
 
-**Post-experiment correction:** The original cron-based PM idea was tested in Exp.4 and failed in this Agor environment. The operational PM model is now **manual trigger** by Opus or human via `agor_sessions_prompt(mode='continue')`. Historical experiment notes below are preserved for context.
+**Post-experiment correction:** The original cron-based PM idea was tested in Exp.4 and failed in this Agor environment. The operational PM model is now **event-driven** (TL push reports + manual fallback sweeps by Opus/human). See D8 decision in `memory/2026-04-06-heartbeat-alternatives.md`. Historical experiment notes below are preserved for context.
 
 ---
 
@@ -22,9 +22,9 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
   │  - Minimal context = minimal token burn
   │  - Manually created via GUI (model override not in MCP)
   │
-  ├── Layer 2b: SONNET PM (heartbeat controller) — MANUAL TRIGGER
-  │     - Triggered manually by Opus or human, not long-running
-  │     - Polls TL session status periodically
+  ├── Layer 2b: SONNET PM (heartbeat controller) — EVENT-DRIVEN + MANUAL FALLBACK
+  │     - Activated by TL status reports (normal) or Opus/human sweep (fallback)
+  │     - Processes TL reports reactively, runs full sweep on manual trigger
   │     - Pushes stalled TLs (prompt to resume)
   │     - Escalates to Opus after 2x failed push
   │     - Zero implementation knowledge
@@ -53,7 +53,7 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
 |---|----------|-----------|
 | D1 | Token optimization is PRIMARY constraint | Opus is scarcest resource; all design serves this |
 | D2 | Opus is passive receiver | No polling, no monitoring, only reacts to impulses/callbacks |
-| D3 | PM is manual-triggered | Cron/scheduled trigger failed in Exp.4; manual heartbeat avoids long-running PM token waste |
+| D3 | PM is event-driven + manual fallback | Cron failed in Exp.4; TLs push reports after each task (D8), Opus/human trigger fallback sweeps |
 | D4 | PM escalation: 2x push then report | Avoids noise to Opus while catching real stalls |
 | D5 | TL persists state to file | Resilience against context exhaustion |
 | D6 | TL context exhaustion → Opus creates replacement | New TL gets resumé from state file |
@@ -67,9 +67,10 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
 ```
 Human → Opus: "Implement feature X"
 Opus → creates TL-1(Area1), TL-2(Area2), PM session
-Opus/human → manually triggers PM heartbeat via agor_sessions_prompt
-PM heartbeat → polls TL status
 TL-N → spawns workers → monitors → commits results
+TL-N → after each task: reports to PM via agor_sessions_prompt
+PM → processes TL reports, pushes blocked TLs, tracks progress
+Human/Opus → triggers PM stall sweep if no TL reports for >15-20 min (fallback)
 TL-N(done) → callback → Opus
 Opus → aggregates → informs Human
 ```

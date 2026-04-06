@@ -13,9 +13,9 @@ Human Leader
 Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
   │  Delegates work, never implements. Communication gate with human.
   │
-  ├── Layer 2b: SONNET PM — MANUAL TRIGGER
+  ├── Layer 2b: SONNET PM — EVENT-DRIVEN + MANUAL FALLBACK
   │     Monitors TL progress, pushes stalled sessions.
-  │     Triggered by Opus or human (no automated cron available).
+  │     Activated by TL status reports (normal) or Opus/human sweep (fallback).
   │     Escalates to Opus after 2x failed push.
   │
   ├── Layer 2a: SONNET TL (per Area) — AUTONOMOUS
@@ -37,7 +37,7 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
 | **Reviewer is the final gate** | App workflow ends at reviewer approval and review artifact, not orchestration details |
 | **TL is the commit fallback** | If a Codex reviewer cannot commit, TL executes the final git commit on the approved output |
 | **Codex can't commit** | Sandbox limitation — every branch needs ≥1 Sonnet session |
-| **PM triggers manually** | Via `agor_sessions_prompt(mode='continue')` by Opus or human |
+| **PM is event-driven** | TLs push status reports after each task; Opus/human trigger fallback sweeps when no reports arrive |
 | **Token optimization** | Primary design constraint — Opus stays thin, Sonnet coordinates |
 
 ### Skills for Spawning

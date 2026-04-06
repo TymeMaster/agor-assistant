@@ -83,6 +83,8 @@ Complete all implementation tasks for [Area Name] as defined in the specificatio
    d. Monitor worker: check `agor_sessions_get(sessionId)` — verify `last_updated` advances
    e. When worker is done: review output in the worker worktree
    f. Cherry-pick or apply changes to YOUR worktree, then commit
+   g. Report to PM: `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Status: [DONE/BLOCKED/IN_PROGRESS]. Details: [brief summary]')`
+      This is mandatory. PM relies on your reports to track progress.
 3. After each completed task, persist progress to `ai/tasks/[feature]-tl-state.md`
 
 ## Commit Gate

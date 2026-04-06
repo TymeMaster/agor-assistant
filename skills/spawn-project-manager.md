@@ -30,19 +30,21 @@ agor_sessions_create(
 )
 ```
 
-### 3. Trigger PM manually
+### 3. PM activation
 
-PM is not cron-based (automated scheduling not available). Trigger via:
+PM is **event-driven**, not periodic. It activates in two ways:
 
+1. **TL status reports (normal flow):** TLs send reports after each completed worker task via `agor_sessions_prompt`. PM processes the report and updates internal state.
+2. **Manual stall detection sweep (fallback):** Human or Opus triggers PM for a full sweep of all TLs when no TL reports have arrived for an extended period.
+
+Manual trigger format (for fallback sweeps):
 ```
 agor_sessions_prompt(
   sessionId: "<PM session ID>",
   mode: "continue",
-  prompt: "Run heartbeat check. Current TL roster: <updated list>"
+  prompt: "Stall detection sweep. Current TL roster: <updated list>"
 )
 ```
-
-Trigger cadence: every 10-15 minutes during active development, or after orchestrator receives TL callback.
 
 ### 4. Track PM session
 
@@ -60,6 +62,11 @@ You are the Project Manager (heartbeat controller) for the [feature-name] featur
 ## Your Mission
 Ensure all Team Leads are making progress. You are a monitor and pusher, NOT an implementor.
 
+## Activation Model
+You are EVENT-DRIVEN, not periodic. You activate when:
+1. A TL sends you a status report (normal flow) → process the report, update your internal state, respond only if action needed
+2. Human or Opus triggers you for stall detection sweep (fallback) → run full sweep of all TLs
+
 ## Active Team Leads
 [Dynamic list — updated at each invocation]
 - TL-1: session_id=[id], Area=[name], worktree=[id]
@@ -67,10 +74,19 @@ Ensure all Team Leads are making progress. You are a monitor and pusher, NOT an 
 
 ## How to Work
 
-### 1. Rate limit pre-flight
+### When activated by TL report
+1. Parse the report: `TL report: [AREA] — Task [N]/[TOTAL] complete. Status: [STATUS]. Details: [...]`
+2. Update your internal tracking for that TL
+3. If Status is BLOCKED → push the TL for details, consider escalating
+4. If all TLs report DONE for all tasks → report completion to orchestrator
+5. No further action needed for normal DONE/IN_PROGRESS reports
+
+### When activated for stall detection sweep
+
+#### 1. Rate limit pre-flight
 Run `./scripts/check-rate-limit.sh`. If `rejected`, skip this cycle and report: "Rate limited, deferring heartbeat."
 
-### 2. Check each TL
+#### 2. Check each TL
 For each TL, call `agor_sessions_get(sessionId)` and classify:
 
 | Classification | Criteria | Action |
@@ -119,13 +135,16 @@ If still stalled after 2nd push → report to orchestrator as DEAD.
 
 ## Triggering Cadence
 
-| Situation | Frequency |
-|-----------|-----------|
-| Active development (multiple TLs) | Every 10-15 min |
-| Single TL, straightforward work | Every 20-30 min |
-| Waiting for human review | Pause PM until review complete |
+PM is primarily activated by TL reports (push model). Manual fallback sweeps are needed only when TL reports stop arriving.
 
-**Who triggers:** Orchestrator (Opus) or human, via `agor_sessions_prompt(mode='continue')`.
+| Trigger source | When | Purpose |
+|----------------|------|---------|
+| TL status report | After each completed worker task | Normal progress tracking |
+| Human/Opus manual sweep | No TL reports for >15-20 min | Stall detection fallback |
+| Human/Opus manual sweep | After orchestrator receives TL callback | Opportunistic full check |
+
+**Normal flow:** TLs push reports → PM processes them reactively. No periodic polling needed.
+**Fallback:** If no reports arrive for 15-20 min, human or Opus triggers a full sweep via `agor_sessions_prompt(mode='continue')`.
 
 ---
 
