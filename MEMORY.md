@@ -51,7 +51,6 @@
 
 ## Open Process Follow-ups
 
-- PM cron/manual trigger wording: operational docs now use manual PM triggering, but `memory/2026-04-04-orchestration-design.md` still contains original cron-based design language in historical sections. Decide whether to annotate as superseded or update for consistency.
 - Agor state sync freshness: run `skills/agor-state-sync.md` and update `memory/agor-state/*.json` when appropriate.
 - `docs-reviewer-final-gate`: after merge/closure, clean up `backup/docs-reviewer-final-gate` and the worktree if no longer needed.
 

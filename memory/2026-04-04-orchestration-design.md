@@ -5,6 +5,8 @@
 Brainstorming session with human leader to optimize token usage and orchestration efficiency.
 Goal: Multi-layer model isolating competencies, minimizing Opus token burn.
 
+**Post-experiment correction:** The original cron-based PM idea was tested in Exp.4 and failed in this Agor environment. The operational PM model is now **manual trigger** by Opus or human via `agor_sessions_prompt(mode='continue')`. Historical experiment notes below are preserved for context.
+
 ---
 
 ## Agreed Architecture: 3-Layer Model
@@ -20,8 +22,8 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
   │  - Minimal context = minimal token burn
   │  - Manually created via GUI (model override not in MCP)
   │
-  ├── Layer 2b: SONNET PM (heartbeat controller) — CRON-BASED
-  │     - Scheduled trigger, not long-running session
+  ├── Layer 2b: SONNET PM (heartbeat controller) — MANUAL TRIGGER
+  │     - Triggered manually by Opus or human, not long-running
   │     - Polls TL session status periodically
   │     - Pushes stalled TLs (prompt to resume)
   │     - Escalates to Opus after 2x failed push
@@ -51,7 +53,7 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
 |---|----------|-----------|
 | D1 | Token optimization is PRIMARY constraint | Opus is scarcest resource; all design serves this |
 | D2 | Opus is passive receiver | No polling, no monitoring, only reacts to impulses/callbacks |
-| D3 | PM is cron-based (scheduled trigger) | Long-running PM session wastes tokens |
+| D3 | PM is manual-triggered | Cron/scheduled trigger failed in Exp.4; manual heartbeat avoids long-running PM token waste |
 | D4 | PM escalation: 2x push then report | Avoids noise to Opus while catching real stalls |
 | D5 | TL persists state to file | Resilience against context exhaustion |
 | D6 | TL context exhaustion → Opus creates replacement | New TL gets resumé from state file |
@@ -64,8 +66,9 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
 ### Normal Flow
 ```
 Human → Opus: "Implement feature X"
-Opus → creates TL-1(Area1), TL-2(Area2), PM(cron)
-PM(cron) → periodically polls TL status
+Opus → creates TL-1(Area1), TL-2(Area2), PM session
+Opus/human → manually triggers PM heartbeat via agor_sessions_prompt
+PM heartbeat → polls TL status
 TL-N → spawns workers → monitors → commits results
 TL-N(done) → callback → Opus
 Opus → aggregates → informs Human
@@ -141,7 +144,7 @@ You are the Project Manager (heartbeat controller) for the baker-tyme developmen
 Ensure all Team Leads are making progress. You are a pusher, not an implementor.
 
 ## Active Team Leads
-[Dynamic list — provided at each cron invocation]
+[Dynamic list — provided at each manual heartbeat invocation]
 - TL-1: session_id=XXX, Area=Walls, worktree=YYY
 - TL-2: session_id=XXX, Area=UI, worktree=YYY
 
@@ -157,7 +160,7 @@ Ensure all Team Leads are making progress. You are a pusher, not an implementor.
 ## Push Protocol
 If TL appears stalled:
 1. First push: agor_sessions_prompt(sessionId, mode='append', prompt="Status check: please report your current progress and any blockers.")
-2. Wait for next cron cycle
+2. Wait for next manual heartbeat invocation
 3. If still stalled: Second push with urgency
 4. If still stalled after 2nd push: Report to Opus orchestrator
 
