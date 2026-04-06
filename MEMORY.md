@@ -3,12 +3,14 @@
 ## Key Decisions
 
 - **2026-03-28:** Bootstrap complete. Jarvis is the sole orchestrator on Baker Tyme — Features board. No duplicate assistants.
-- **2026-03-29:** Model override NOT supported in Agor MCP - use agenticTool only. Opus sessions require manual GUI creation. Commit gate: orchestrator commits, workers don't.
+- **2026-03-29:** Model override NOT supported in Agor MCP - use agenticTool only. Opus sessions require manual GUI creation. Commit gate is orchestration-dependent: app workflow ends at reviewer approval, but Agor TL may need to execute the final commit when the reviewer is a non-commit-capable Codex session.
 - **2026-03-29:** Git strategy for agor-assistant: maintain in separate branch (`assistent-baker-tyme`), no PRs to upstream. Fork is for our workspace config, not feature contributions.
+- **2026-04-06:** baker-tyme branch baseline rule: normal feature/docs/chore work starts from `origin/develop`; `origin/main` is only for release-oriented flow, such as preparing release PRs from `develop` to `main`.
 
 ## Important Context
 
 - **baker-tyme** is a Godot Android game (TymeMaster). Primary and only work repo for now.
+- For **baker-tyme**, create normal worktrees from `origin/develop` by default. Do not use `origin/main` unless the task is explicitly release-related.
 - Board workflow: Backlog → Architecture → WB—Areas → WB—Tasks → Development → Done
 - Human wants full transparency in early stages. Autonomy increases gradually.
 - Future plan: split baker-tyme into modular repos for cross-app reuse.
@@ -25,7 +27,7 @@
 | Layer | Role | Model | Behavior |
 |-------|------|-------|----------|
 | 1 | Orchestrator (Jarvis) | Opus (manual GUI) | PASSIVE — delegates, never implements |
-| 2a | Team Lead (per Area) | Sonnet | AUTONOMOUS — owns Area, delegates + commits |
+| 2a | Team Lead (per Area) | Sonnet | AUTONOMOUS — owns Area, delegates, and provides commit-capable fallback |
 | 2b | Project Manager | Sonnet | Heartbeat controller, pushes stalled TLs |
 | 3 | Workers | Sonnet (dev) / Codex (review) | Execute tasks in isolated worktrees |
 
@@ -39,8 +41,9 @@
 - PM can poll session status + push stalled sessions ✅
 
 **Commit Gate:**
-- Team Lead (Sonnet) commits ALL code in its Area
-- Workers (Sonnet/Codex) produce code, never commit
+- baker-tyme workflow ends at reviewer approval and final review artifact
+- Commit-capable reviewers may commit their own approved outputs
+- If the reviewer is Codex, Team Lead executes the final commit on the reviewer's approved output
 - Codex cannot commit (sandbox limitation)
 
 **Context Exhaustion:** TL persists state to file → escalates to Opus → Opus creates replacement TL with resumé → updates PM with new session ID

@@ -7,6 +7,7 @@
 - Area specification document exists in the worktree
 - Rate limit pre-flight passed (see `check-rate-limit.md`)
 - Board ID and repo ID known (from IDENTITY.md)
+- For baker-tyme normal feature/docs/chore work, use `origin/develop` as the source branch. Use `origin/main` only for explicit release-oriented work.
 
 ---
 
@@ -20,11 +21,13 @@ agor_worktrees_create(
   worktreeName: "<feature>-area-<N>",
   boardId: "<main board ID>",
   createBranch: true,
-  sourceBranch: "<feature branch or main>"
+  sourceBranch: "origin/develop"
 )
 ```
 
 Record the returned `worktree_id`.
+
+For release-oriented work only, choose the release-specific source branch intentionally instead of the normal `origin/develop` baseline.
 
 ### 2. Create TL session in the worktree
 
@@ -76,13 +79,16 @@ Complete all implementation tasks for [Area Name] as defined in the specificatio
    c. Create worker session: `agor_sessions_create(worktreeId=<new>, agenticTool=<see below>, initialPrompt=<task prompt>)`
       - Analysis/review tasks → agenticTool: "codex"
       - Development tasks → agenticTool: "claude-code" (Sonnet)
+      - If spawning a Codex reviewer, state explicitly in the prompt that YOU retain final git commit responsibility
    d. Monitor worker: check `agor_sessions_get(sessionId)` — verify `last_updated` advances
    e. When worker is done: review output in the worker worktree
    f. Cherry-pick or apply changes to YOUR worktree, then commit
 3. After each completed task, persist progress to `ai/tasks/[feature]-tl-state.md`
 
 ## Commit Gate
-- YOU commit all code. Workers produce changes, you review and commit.
+- The app workflow ends at reviewer approval and final review artifact.
+- Commit-capable reviewers may commit their own approved outputs.
+- If the reviewer is Codex, YOU retain final git commit responsibility and must say so in the reviewer prompt.
 - Codex workers cannot commit (sandbox limitation).
 - Use clear commit messages following CONVENTIONS.md format.
 

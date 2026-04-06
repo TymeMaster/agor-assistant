@@ -33,7 +33,7 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
   │     │  - Full ownership of one Area
   │     │  - Knows: high-level architecture + own Area spec + AI workflow rules
   │     │  - Delegates: analysis → Codex, development → Sonnet, review → Codex
-  │     │  - Commits prepared worker changes (commit gate)
+  │     │  - Commits prepared worker changes when acting as commit-capable fallback
   │     │  - Persists work state to file regularly
   │     │  - Context exhaustion → escalates to Opus → replacement TL
   │     │
@@ -56,8 +56,8 @@ Layer 1: OPUS ORCHESTRÁTOR (Jarvis) — PASSIVE
 | D5 | TL persists state to file | Resilience against context exhaustion |
 | D6 | TL context exhaustion → Opus creates replacement | New TL gets resumé from state file |
 | D7 | PM tracks dynamic TL list | Must distinguish: TL finished vs needs push vs dead |
-| D8 | Every branch has ≥1 Sonnet | Codex can't commit; Sonnet TL handles commit gate |
-| D9 | Workers never commit | TL reviews and commits worker output |
+| D8 | Every branch has ≥1 commit-capable session | Codex can't commit; Sonnet TL provides fallback when needed |
+| D9 | Review is the final workflow gate | Reviewer owns the final verdict; commit execution may be delegated by orchestration |
 
 ## Communication Protocols
 
@@ -116,11 +116,13 @@ Complete all implementation tasks for [Area Name] as defined in the specificatio
       - Analysis/review tasks → agenticTool: "codex"
       - Development tasks → agenticTool: "claude-code" (Sonnet)
    c. Monitor worker (check session status)
-   d. When worker is done: review output, commit changes
+   d. When worker is done: review output, commit changes if you retained commit ownership
 4. Persist your progress to [state file path] after each completed task
 
 ## Commit Gate
-- YOU commit all code. Workers produce changes, you review and commit.
+- The app workflow ends at reviewer approval and final review artifact.
+- If the reviewer is commit-capable, they may commit the approved output.
+- If the reviewer is Codex, YOU retain commit ownership and perform the final git commit.
 - Codex workers cannot commit (sandbox limitation).
 
 ## Context Exhaustion Protocol

@@ -22,3 +22,5 @@
 - **Local Path:** /home/agor/projects/godot/baker-tyme
 - **Type:** Godot Android game (GDScript)
 - **Default Branch:** main
+- **Development Branch:** develop
+- **Normal Worktree Source:** origin/develop

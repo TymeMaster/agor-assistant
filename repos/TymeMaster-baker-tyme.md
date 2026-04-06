@@ -9,10 +9,17 @@
 
 ## Workflow
 
+### Branch Baseline
+
+- Default source for normal feature/docs/chore work: `origin/develop`
+- Use `origin/main` only for release-oriented flow, such as preparing release PRs from `develop` to `main`
+- PRs for normal work target `develop`, not `main`
+
 ### Before Starting Work
 
 - [ ] Read AI workflow docs in `ai/workflow/` for phase-specific guidance
 - [ ] Check `ai/workflow/CONVENTIONS.md` for naming, structure, commit format
+- [ ] Verify the worktree was created from `origin/develop` unless this is explicitly release work
 - [ ] Verify Godot 4.x is installed and accessible via `godot` command
 - [ ] For new features: start from Architecture phase (see AI Workflow below)
 
@@ -69,15 +76,16 @@ All AI task artifacts live in `ai/tasks/YYYYMMDD-NN-task-slug/`:
 - Implementation plans, summaries, reviews
 - Integration reviews (area-level and complete)
 
-### Commit Responsibility
+### Finalization Responsibility
 
-**Board Assistant commits. Workers produce.**
+**Reviewer is the final workflow gate.**
 
 - Worker sessions (Architect, Analyst, Developer, Reviewer) produce code/docs
-- Board Assistant (orchestrator) handles ALL git commits
-- Never delegate commit to Codex sessions (sandbox limitation)
+- The reviewer is the last role in the task flow and produces the final review verdict
+- After reviewer approval, the task is finalized with a commit
+- Which session executes the git commit is an orchestration concern, not an app workflow rule
 
-See `ai/workflow/ORCHESTRATION_PATTERNS.md` in agor-assistant repo for orchestration guidance.
+See `ORCHESTRATION_PATTERNS.md` in the agor-assistant repo for orchestration-specific commit handling.
 
 ## Tech Stack Details
 

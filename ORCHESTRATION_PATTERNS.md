@@ -19,7 +19,7 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
   │     Escalates to Opus after 2x failed push.
   │
   ├── Layer 2a: SONNET TL (per Area) — AUTONOMOUS
-  │     │  Full ownership of one Area. Delegates to workers, commits results.
+  │     │  Full ownership of one Area. Delegates to workers, commits when fallback is needed.
   │     │  Persists state to file for context exhaustion resilience.
   │     │
   │     ├── Layer 3: Codex Worker (analysis/review)
@@ -34,7 +34,8 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
 | Rule | Detail |
 |------|--------|
 | **Opus is passive** | Never polls, never monitors — only reacts to callbacks/prompts |
-| **TL commits all code** | Workers produce changes, TL reviews and commits (commit gate) |
+| **Reviewer is the final gate** | App workflow ends at reviewer approval and review artifact, not orchestration details |
+| **TL is the commit fallback** | If a Codex reviewer cannot commit, TL executes the final git commit on the approved output |
 | **Codex can't commit** | Sandbox limitation — every branch needs ≥1 Sonnet session |
 | **PM triggers manually** | Via `agor_sessions_prompt(mode='continue')` by Opus or human |
 | **Token optimization** | Primary design constraint — Opus stays thin, Sonnet coordinates |
@@ -51,6 +52,14 @@ When a TL runs out of context:
 2. TL reports: "Context exhausted, state at [path]"
 3. Orchestrator creates replacement TL with state file as context
 4. Orchestrator updates PM with new TL session ID
+
+### Commit Fallback Protocol
+
+When TL delegates the final review to a Codex reviewer:
+1. TL tells the reviewer in the prompt that TL retains the git commit responsibility
+2. Reviewer produces the final review artifact and approval/rejection verdict
+3. If approved, TL applies any required final adjustments and performs the git commit
+4. TL records in the summary that commit ownership was retained due to Codex sandbox limits
 
 ---
 
