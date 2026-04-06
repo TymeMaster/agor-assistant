@@ -10,7 +10,7 @@
 
 - [ ] Main board identified (in `IDENTITY.md`)
 - [ ] Repo is configured in Agor
-- [ ] Memory tracking system initialized (`memory/agor-state/`)
+- [ ] Durable tracking plan chosen: daily log/MEMORY for source of truth; optional `memory/agor-state/` cache for short-term handoff
 
 ---
 
@@ -59,7 +59,18 @@ const session = await agor.sessions.spawn({
 
 ### 3. Track in Memory
 
-**Update `memory/agor-state/worktrees.json`:**
+**Log durable state in daily memory (`memory/YYYY-MM-DD.md`):**
+
+```markdown
+### Task Created: [Task Name]
+
+- **Worktree:** [name] (ID: [worktree_id])
+- **Session:** [title] (ID: [session_id])
+- **Purpose:** [brief task purpose]
+- **Expected outcome:** [PR / investigation result / etc.]
+```
+
+**Optionally update `memory/agor-state/worktrees.json` as a short-term handoff cache:**
 
 ```json
 {
@@ -79,7 +90,7 @@ const session = await agor.sessions.spawn({
 }
 ```
 
-**Update `memory/agor-state/sessions.json`:**
+**Optionally update `memory/agor-state/sessions.json` as a short-term handoff cache:**
 
 ```json
 {
@@ -97,7 +108,9 @@ const session = await agor.sessions.spawn({
 }
 ```
 
-**Log in daily memory (`memory/YYYY-MM-DD.md`):**
+Before acting on cached IDs later, verify current state through Agor MCP.
+
+**Example daily memory entry:**
 
 ```markdown
 ### Task Created: [Task Name]
@@ -129,10 +142,10 @@ const worktree = await agor.worktrees.get({ worktreeId: WORKTREE_ID });
 
 When task completes:
 
-**Update tracking files:**
-- Mark worktree as `completed` in `worktrees.json`
-- Mark session as `completed` in `sessions.json`
+**Update durable tracking:**
 - Log outcome in daily memory
+- Promote durable decisions or workflow state to `MEMORY.md` / `TODO.md` as needed
+- Optionally update `memory/agor-state/*.json` if another session still needs the short-term cache
 
 **Log learnings:**
 ```markdown

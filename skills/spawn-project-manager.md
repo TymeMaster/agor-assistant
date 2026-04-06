@@ -13,7 +13,7 @@
 
 ### 1. Prepare TL roster
 
-Gather from `memory/agor-state/sessions.json` or daily log:
+Gather from daily log, current Agor MCP state, or `memory/agor-state/sessions.json` if a fresh cache/handoff snapshot exists:
 - Each TL's session ID, area name, worktree ID
 - Expected completion criteria
 
@@ -48,7 +48,7 @@ agor_sessions_prompt(
 
 ### 4. Track PM session
 
-Record PM session ID in daily log and `memory/agor-state/sessions.json`.
+Record PM session ID in daily log. Also update `memory/agor-state/sessions.json` if another session needs a short-term handoff cache.
 
 ---
 
@@ -162,4 +162,4 @@ PM is primarily activated by TL reports (push model). Manual fallback sweeps are
 ## Related Skills
 - `spawn-team-lead.md` — creating TL sessions
 - `check-rate-limit.md` — rate limit pre-flight
-- `agor-state-sync.md` — state synchronization
+- `agor-state-sync.md` — optional local cache refresh

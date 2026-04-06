@@ -91,7 +91,7 @@ Get your main board ID from IDENTITY.md, then:
 - Raw debugging logs
 
 ### Other Periodic Tasks
-- Sync `memory/agor-state/` with current Agor state (every session start — see `skills/agor-state-sync.md`)
+- Optionally refresh `memory/agor-state/` when a short-term local cache or handoff snapshot is useful (see `skills/agor-state-sync.md`)
 - Commit workspace changes if modified
 
 ---
@@ -127,7 +127,7 @@ Use these Agor MCP tools for heartbeat checks:
 ```markdown
 ## Daily Checks (if enabled)
 
-- [ ] Sync Agor state: refresh worktrees.json and sessions.json
+- [ ] If useful for handoff/restart: refresh `memory/agor-state/*.json` cache
 - [ ] Review yesterday's log, extract learnings to MEMORY.md
 - [ ] Check for stuck/failed sessions on main board
 - [ ] Commit workspace changes if any

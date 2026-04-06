@@ -1,13 +1,23 @@
-# Agor State Tracking
+# Agor State Cache
 
-This directory tracks Agor resources managed by the agent.
+This directory is an ephemeral operational cache for Agor resources.
+
+It is **not** persistent source of truth. The JSON files in this directory are gitignored by default and may be incomplete, stale, uncommitted, or specific to one session's short-term needs.
+
+Use this cache for:
+- Short-term handoff between sessions
+- Controlled restart protection
+- Temporary sharing of worktree/session IDs
+- Local scratchpad notes that are useful right now but not worth promoting to persistent memory
+
+Do not use it as the only input for critical orchestration decisions. Before acting on worktrees, sessions, boards, or repos, verify current state through Agor MCP. Persistent decisions and workflow state belong in git-tracked docs such as `MEMORY.md`, `memory/YYYY-MM-DD.md`, `TODO.md`, `repos/*.md`, and `skills/*.md`.
 
 ---
 
 ## Files
 
 ### repos.json
-Configured repositories in Agor that the agent works with.
+Optional local snapshot of configured repositories in Agor.
 
 **Structure:**
 ```json
@@ -25,7 +35,7 @@ Configured repositories in Agor that the agent works with.
 ```
 
 ### worktrees.json
-Active worktrees the agent is managing.
+Optional local snapshot of active worktrees the agent is managing.
 
 **Structure:**
 ```json
@@ -45,7 +55,7 @@ Active worktrees the agent is managing.
 ```
 
 ### sessions.json
-Active sessions and their genealogy (parent-child relationships).
+Optional local snapshot of active sessions and their genealogy (parent-child relationships).
 
 **Structure:**
 ```json
@@ -78,9 +88,9 @@ Active sessions and their genealogy (parent-child relationships).
 
 The agent should:
 1. **Initialize** these files during bootstrap (copy from .template files)
-2. **Sync** at session start by querying Agor MCP
-3. **Update** after creating/modifying resources
-4. **Reference** when making decisions about work
+2. **Refresh** them when a short-term handoff/cache snapshot is useful
+3. **Update** them after creating/modifying resources only if another session will benefit from the scratchpad
+4. **Verify** current state via Agor MCP before making decisions
 
 ---
 

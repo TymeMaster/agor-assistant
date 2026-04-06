@@ -181,7 +181,7 @@ Before doing anything else:
 4. **Read `BOARD.md`** — board zones and workflow expectations
 5. **Read `memory/YYYY-MM-DD.md`** (today + yesterday) — recent context
 6. **Read `MEMORY.md`** — long-term curated memory
-7. **Sync Agor state** — follow [`skills/agor-state-sync.md`](skills/agor-state-sync.md)
+7. **Optionally refresh Agor cache** — use [`skills/agor-state-sync.md`](skills/agor-state-sync.md) only when a local working snapshot is useful
 8. **Check `repos/` directory** — read context files for repos you'll be working in
 
 9. **Rate limit pre-flight** — before creating worktrees/sessions, check `./scripts/check-rate-limit.sh` (see [`skills/check-rate-limit.md`](skills/check-rate-limit.md) and `ORCHESTRATION_PATTERNS.md § Rate Limit Pre-Flight`)
@@ -216,11 +216,11 @@ You wake up fresh each session. These files are your continuity:
 
 ```
 memory/
-├── YYYY-MM-DD.md           # Daily logs (raw notes)
-├── agor-state/             # Agor resource tracking
-│   ├── worktrees.json      # Active worktrees you manage
-│   ├── sessions.json       # Active sessions and genealogy
-│   └── repos.json          # Configured repositories
+├── YYYY-MM-DD.md           # Daily logs (raw notes; persistent source of truth)
+├── agor-state/             # Ephemeral Agor resource cache / handoff scratchpad
+│   ├── worktrees.json      # Optional local snapshot; may be incomplete/stale
+│   ├── sessions.json       # Optional local snapshot; may be incomplete/stale
+│   └── repos.json          # Optional local snapshot; may be incomplete/stale
 └── learnings/              # Self-improvement logs
     └── YYYY-MM-DD.md       # Lessons learned
 ```
@@ -239,10 +239,10 @@ memory/
 - Distilled essence of your experience
 
 **Agor State (`memory/agor-state/*.json`):**
-- Current worktrees you're managing
-- Active sessions and their genealogy
-- Configured repos and board IDs
-- Updated at session start and after Agor operations
+- Ephemeral operational cache, not persistent source of truth
+- May be incomplete, stale, uncommitted, or session-local
+- Useful for short-term handoff, controlled restart protection, or ad-hoc shared notes
+- Before acting on worktrees/sessions/repos, verify current state through Agor MCP
 
 **Learnings (`memory/learnings/YYYY-MM-DD.md`):**
 - What you learned today
@@ -396,14 +396,14 @@ Track Agor resources locally:
 - Record worktree IDs and purposes
 - Track session genealogy (parent-child relationships)
 - Log decisions and outcomes
-- Maintain up-to-date `memory/agor-state/`
+- Treat `memory/agor-state/` as a best-effort cache; authoritative state comes from Agor MCP and git-tracked memory/logs
 
 ### 4. Memory-Driven
 
 Consult memory before acting:
 - Check daily logs for recent context
 - Review `MEMORY.md` for patterns
-- Sync Agor state at session start
+- Refresh `memory/agor-state/` only when a local working snapshot is useful
 - Learn from past mistakes
 
 ### 5. Multi-Agent Coordination
@@ -462,7 +462,7 @@ The `HEARTBEAT.md` file defines periodic tasks. For Agor-claw, heartbeats are ab
 
 **Proactive work:**
 - Review and update `MEMORY.md`
-- Sync `memory/agor-state/`
+- Refresh `memory/agor-state/` only if a short-term local cache is useful
 - Commit and push workspace changes
 - Update learnings from recent work
 

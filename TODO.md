@@ -13,12 +13,11 @@ Status from workflow cleanup review:
 - ✅ `origin/main` baseline mistake resolved for `docs-reviewer-final-gate`: intended changes were reapplied on top of `origin/develop`, backup branch preserved as `backup/docs-reviewer-final-gate`.
 - ✅ Integration-review workflow reference is no longer blocking for normal work because `origin/develop` contains the workflow docs that `main` lacked.
 - ✅ PM cron/manual trigger wording resolved: `memory/2026-04-04-orchestration-design.md` now marks cron as a failed original hypothesis and uses manual PM heartbeat trigger in the operational design sections.
-- ⏳ Agor state snapshot freshness still needs a state sync pass.
+- ✅ Agor state snapshot freshness resolved as policy: `memory/agor-state/*.json` is an ephemeral operational cache, not persistent source of truth. It may be incomplete/stale/uncommitted; verify current resource state through Agor MCP before acting.
 
 Next actions:
 - Process `baker-tyme` branch `docs-reviewer-final-gate` against `develop`.
 - After merge/closure, clean up `backup/docs-reviewer-final-gate` and the worktree.
-- Run `skills/agor-state-sync.md` and commit updated state if appropriate.
 
 ### B3. Hygiene Gates - Integration Review ✅ DONE (2026-04-04)
 
@@ -33,49 +32,16 @@ Integrated `scripts/check-rate-limit.sh` into orchestration workflow:
 
 ---
 
-### A1. Agor State Sync at Session Start ✅ DONE (2026-04-03)
+### A1. Agor State Cache Policy ✅ DONE (2026-04-06)
 
-**What:** Automate sync of `memory/agor-state/*.json` when session starts
+**What:** Define `memory/agor-state/*.json` as optional ephemeral cache rather than persistent source of truth
 
 **Current state:**
-- AGENTS.md line 87 says "sync Agor state at session start"
-- BUT: not automated, files go stale
-- Claude analysis (2026-03-29) found stale timestamps
-
-**Design decision needed:**
-
-**Option A: Skill** (`skills/agor-state-sync/`)
-- Create skill with SKILL.md
-- Orchestrator calls skill manually at session start
-- PRO: explicit control, easy to debug
-- CON: manual step (can be forgotten)
-
-**Option B: Hook** (settings.json)
-- Add `user-prompt-submit-hook` or session-start equivalent
-- Auto-runs sync on every session start
-- PRO: fully automated, never forget
-- CON: adds latency to every session start
-
-**Option C: Manual pattern in AGENTS.md**
-- Document pattern: "First thing: run agor_worktrees_list, update worktrees.json"
-- No automation, just guidance
-- PRO: simple, no infrastructure
-- CON: manual, can be skipped
-
-**Recommendation:** Option A (Skill) - balance of automation and control
-
-**Implementation:**
-1. Create `skills/agor-state-sync/SKILL.md`
-2. Document:
-   - When to use (every session start)
-   - Steps: call agor_worktrees_list, agor_sessions_list, update JSON files with timestamp
-   - Error handling
-3. Update AGENTS.md "Every Session" section to reference skill
-4. Test in next session
-
-**Effort:** ~30-45 minutes
-
-**Why:** Stale state tracking undermines reliability. Sessions should start with accurate Agor resource state.
+- Persistent state lives in git-tracked docs: `MEMORY.md`, daily logs, `TODO.md`, `repos/*.md`, and `skills/*.md`.
+- Current Agor resource truth comes from Agor MCP at decision time.
+- `memory/agor-state/*.json` is gitignored, optional, and allowed to be stale/incomplete.
+- Use it only for short-term handoff, controlled restart protection, or ad-hoc shared session/worktree notes.
+- Do not base critical orchestration decisions solely on this cache.
 
 ---
 

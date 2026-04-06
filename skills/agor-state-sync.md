@@ -1,8 +1,8 @@
 # Skill: Agor State Sync
 
-**When to use:** At the start of every session, as step 7 of the Session Start Checklist in AGENTS.md.
+**When to use:** When a session needs a short-term local snapshot for handoff, controlled restart protection, or temporary shared state.
 
-**Purpose:** Refresh `memory/agor-state/` with current Agor resource state so the orchestrator works with accurate data, not stale snapshots.
+**Purpose:** Refresh `memory/agor-state/` as an ephemeral operational cache. This cache is not persistent source of truth and may be incomplete/stale between refreshes. Before making critical orchestration decisions, query Agor MCP directly.
 
 **Prerequisites:**
 - Agor MCP tools available (`agor_worktrees_list`, `agor_sessions_list`, `agor_repos_list`)
@@ -25,7 +25,7 @@ agor_sessions_list           → status: "running" (call 1)
 agor_repos_list              → all repos
 ```
 
-**Failure rule:** If ANY call fails or returns empty results unexpectedly, do NOT overwrite the existing JSON. Log the failure in the daily log and proceed with stale data. Never write an empty or partial snapshot.
+**Failure rule:** If ANY call fails or returns empty results unexpectedly, do NOT overwrite the existing JSON. Log the failure in the daily log and proceed by querying Agor MCP directly as needed. Never write an empty or partial snapshot.
 
 ### 2. Prepare `worktrees.json`
 
@@ -120,15 +120,15 @@ Before overwriting any file, verify:
 
 Then write all three files atomically (write all or none — if one write fails, note it in daily log).
 
-### 6. Log the sync
+### 6. Log the cache refresh
 
 Add to today's daily log (`memory/YYYY-MM-DD.md`):
 
 ```
-[HH:MM] Agor state synced: N worktrees, N sessions (running: X, idle: Y), N repos
+[HH:MM] Agor state cache refreshed: N worktrees, N sessions (running: X, idle: Y), N repos
 ```
 
-If any fetch failed: `[HH:MM] Agor state sync PARTIAL: worktrees OK, sessions FAILED (stale data retained)`
+If any fetch failed: `[HH:MM] Agor state cache refresh PARTIAL: worktrees OK, sessions FAILED (stale cache retained)`
 
 ---
 
@@ -155,7 +155,7 @@ If any fetch failed: `[HH:MM] Agor state sync PARTIAL: worktrees OK, sessions FA
 
 ## Phase 2 (future)
 
-If sync is frequently skipped or schemas drift, replace manual steps 2–5 with a small script. The skill then becomes: "run the script, verify output, log result." Keep this skill as the spec.
+If cache refresh becomes frequent or schemas drift, replace manual steps 2–5 with a small script. The skill then becomes: "run the script, verify output, log result." Keep this skill as the spec.
 
 ---
 

@@ -44,10 +44,12 @@ Record the returned `session_id`.
 
 ### 3. Track in orchestrator memory
 
-Update `memory/agor-state/sessions.json` and daily log with:
+Update the daily log with:
 - TL session ID, worktree ID, area name
 - Feature context (which feature, which area)
 - Timestamp
+
+Also update `memory/agor-state/sessions.json` if another session needs a short-term handoff cache.
 
 ---
 
@@ -122,5 +124,5 @@ The orchestrator will create a replacement TL with your state file as context.
 
 ## Related Skills
 - `check-rate-limit.md` — rate limit pre-flight
-- `agor-state-sync.md` — state synchronization
+- `agor-state-sync.md` — optional local cache refresh
 - `spawn-project-manager.md` — PM that monitors TLs

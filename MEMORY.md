@@ -51,13 +51,13 @@
 
 ## Open Process Follow-ups
 
-- Agor state sync freshness: run `skills/agor-state-sync.md` and update `memory/agor-state/*.json` when appropriate.
+- `memory/agor-state/*.json` policy: resolved as ephemeral operational cache, not persistent source of truth. Use it for short-term handoff/restart protection only; verify current resource state through Agor MCP before acting.
 - `docs-reviewer-final-gate`: after merge/closure, clean up `backup/docs-reviewer-final-gate` and the worktree if no longer needed.
 
 **Session Start Checklist:**
 1. Read SOUL.md, IDENTITY.md, USER.md, BOARD.md
 2. Read today + yesterday daily logs
-3. Sync Agor state (worktrees, sessions)
+3. Optionally refresh `memory/agor-state/` if a local working snapshot is useful
 4. Check relevant repos/ context files
 
 ## Preferences Discovered

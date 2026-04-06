@@ -98,7 +98,7 @@ See how BOOTSTRAP.md creates worktrees with the POC test. That's a skill in acti
 
 1. Check if repo exists
 2. Create worktree with Agor MCP
-3. Record in memory/agor-state/worktrees.json
+3. Log durable details in daily memory; optionally record a short-term cache entry in `memory/agor-state/worktrees.json`
 4. Place on main board
 5. Log to daily memory
 
@@ -154,7 +154,7 @@ Skills in this workspace should leverage Agor MCP heavily:
 
 **Memory Management:**
 - Update MEMORY.md from daily logs
-- Sync agor-state/ with Agor
+- Refresh agor-state/ only when a short-term handoff cache is useful
 - Archive old logs
 - Extract learnings
 
