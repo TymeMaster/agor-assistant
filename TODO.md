@@ -1,10 +1,25 @@
 # TODO - Board Assistant Process Improvements
 
-**Last Updated:** 2026-04-03
+**Last Updated:** 2026-04-06
 
 ---
 
 ## ⏳ Fáze 2: Process Hardening (Zbývá)
+
+### Review Cleanup Follow-ups (2026-04-06)
+
+Status from workflow cleanup review:
+- ✅ Commit gate inconsistency resolved: `baker-tyme` app workflow now treats reviewer as the final gate; Agor orchestration handles Codex commit fallback via TL.
+- ✅ `origin/main` baseline mistake resolved for `docs-reviewer-final-gate`: intended changes were reapplied on top of `origin/develop`, backup branch preserved as `backup/docs-reviewer-final-gate`.
+- ✅ Integration-review workflow reference is no longer blocking for normal work because `origin/develop` contains the workflow docs that `main` lacked.
+- ⏳ PM cron/manual trigger wording still needs cleanup decision: `ORCHESTRATION_PATTERNS.md` uses manual PM trigger, but historical design doc still contains cron-based wording.
+- ⏳ Agor state snapshot freshness still needs a state sync pass.
+
+Next actions:
+- Process `baker-tyme` branch `docs-reviewer-final-gate` against `develop`.
+- After merge/closure, clean up `backup/docs-reviewer-final-gate` and the worktree.
+- Decide whether to annotate or update `memory/2026-04-04-orchestration-design.md` for PM cron/manual wording.
+- Run `skills/agor-state-sync.md` and commit updated state if appropriate.
 
 ### B3. Hygiene Gates - Integration Review ✅ DONE (2026-04-04)
 

@@ -19,6 +19,7 @@
 
 - **feat-walls** — ✅ DONE (2026-03-29). All 3 Areas complete, comprehensive test suite (335/335 passing), complete integration review approved. Ready for UAT and merge. Worktree moved to Done zone.
 - **chore-agor-test** — early Agor testing worktree, likely can be cleaned up.
+- **docs-reviewer-final-gate** — `baker-tyme` docs/process cleanup branch. Recreated on top of `origin/develop` after the initial `origin/main` baseline mistake. Current remote branch `origin/docs-reviewer-final-gate` has commits `82c5dad` (branch baseline/PR target rules) and `bb255e4` (reviewer final gate). Backup of old `origin/main`-based version: `backup/docs-reviewer-final-gate`.
 
 ## Orchestration Model (decided 2026-04-04)
 
@@ -47,6 +48,12 @@
 - Codex cannot commit (sandbox limitation)
 
 **Context Exhaustion:** TL persists state to file → escalates to Opus → Opus creates replacement TL with resumé → updates PM with new session ID
+
+## Open Process Follow-ups
+
+- PM cron/manual trigger wording: operational docs now use manual PM triggering, but `memory/2026-04-04-orchestration-design.md` still contains original cron-based design language in historical sections. Decide whether to annotate as superseded or update for consistency.
+- Agor state sync freshness: run `skills/agor-state-sync.md` and update `memory/agor-state/*.json` when appropriate.
+- `docs-reviewer-final-gate`: after merge/closure, clean up `backup/docs-reviewer-final-gate` and the worktree if no longer needed.
 
 **Session Start Checklist:**
 1. Read SOUL.md, IDENTITY.md, USER.md, BOARD.md
