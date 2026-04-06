@@ -34,7 +34,7 @@
 
 **Primary constraint:** Token optimization. Opus stays thin, Sonnet coordinates, Codex analyzes.
 
-**PM triggering:** Manual (by Opus or human) via `agor_sessions_prompt`. Automated cron not available (5 mechanisms tested, all failed — see design doc).
+**PM triggering:** Event-driven TL reports plus manual fallback sweeps. TLs push status reports to PM after worker task completion; Opus/human triggers fallback sweeps when reports stop or a stall is suspected. Automated cron not available (5 mechanisms tested, all failed — see design doc).
 
 **Experimentally verified (2026-04-04):**
 - Sonnet sessions have full Agor MCP access (38 tools) ✅

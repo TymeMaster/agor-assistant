@@ -12,7 +12,7 @@ Status from workflow cleanup review:
 - ✅ Commit gate inconsistency resolved: `baker-tyme` app workflow now treats reviewer as the final gate; Agor orchestration handles Codex commit fallback via TL.
 - ✅ `origin/main` baseline mistake resolved for `docs-reviewer-final-gate`: intended changes were reapplied on top of `origin/develop`, backup branch preserved as `backup/docs-reviewer-final-gate`.
 - ✅ Integration-review workflow reference is no longer blocking for normal work because `origin/develop` contains the workflow docs that `main` lacked.
-- ✅ PM cron/manual trigger wording resolved: `memory/2026-04-04-orchestration-design.md` now marks cron as a failed original hypothesis and uses manual PM heartbeat trigger in the operational design sections.
+- ✅ PM heartbeat wording resolved: cron is marked as a failed original hypothesis; the operational model is now event-driven TL reports plus manual fallback sweeps.
 - ✅ Agor state snapshot freshness resolved as policy: `memory/agor-state/*.json` is an ephemeral operational cache, not persistent source of truth. It may be incomplete/stale/uncommitted; verify current resource state through Agor MCP before acting.
 
 Next actions:
