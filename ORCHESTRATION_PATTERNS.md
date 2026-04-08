@@ -8,7 +8,7 @@ All AI work follows a 3-layer delegation model. Full design details in `memory/2
 
 ```
 Human Leader
-  │
+  │  (minimal: Opus model switch + answer open arch decisions)
   ▼
 Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
   │  Delegates work, never implements. Communication gate with human.
@@ -18,7 +18,16 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
   │     Activated by TL status reports (normal) or Opus/human sweep (fallback).
   │     Escalates to Opus after 2x failed push.
   │
-  ├── Layer 2a: SONNET TL (per Area) — AUTONOMOUS
+  ├── Layer 2a: SONNET ARCH-TL (Architecture phase) — AUTONOMOUS
+  │     │  Full ownership of Architecture phase lifecycle.
+  │     │  Runs in the feature worktree (no separate worktree).
+  │     │  Escalates to Jarvis only for Opus model switch + human Q&A.
+  │     │  Commits arch + review artifacts on completion.
+  │     │
+  │     ├── Layer 3: Opus Worker (Architect — model switched manually by human)
+  │     └── Layer 3: Codex Worker (Architecture Reviewer)
+  │
+  ├── Layer 2a: SONNET TL (per Area, post-WB) — AUTONOMOUS
   │     │  Full ownership of one Area. Delegates to workers, commits when fallback is needed.
   │     │  Persists state to file for context exhaustion resilience.
   │     │
@@ -34,15 +43,18 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
 | Rule | Detail |
 |------|--------|
 | **Opus is passive** | Never polls, never monitors — only reacts to callbacks/prompts |
+| **Arch-TL owns Architecture phase** | Spawns architect + reviewer, manages Q&A relay, commits artifacts — Jarvis stays passive |
 | **Reviewer is the final gate** | App workflow ends at reviewer approval and review artifact, not orchestration details |
 | **TL is the commit fallback** | If a Codex reviewer cannot commit, TL executes the final git commit on the approved output |
 | **Codex can't commit** | Sandbox limitation — every branch needs ≥1 Sonnet session |
 | **PM is event-driven** | TLs push status reports after each task; Opus/human trigger fallback sweeps when no reports arrive |
 | **Token optimization** | Primary design constraint — Opus stays thin, Sonnet coordinates |
+| **Workflow gate compliance** | Before any phase transition, read the relevant `AI_WORKFLOW__*_TASK.md` and verify all artifacts exist |
 
 ### Skills for Spawning
 
-- **Team Lead:** [`skills/spawn-team-lead.md`](skills/spawn-team-lead.md) — prompt template, worktree setup, error handling
+- **Arch Team Lead:** [`skills/spawn-arch-team-lead.md`](skills/spawn-arch-team-lead.md) — architecture phase lifecycle, Opus model relay, reviewer spawn, commit
+- **Area Team Lead:** [`skills/spawn-team-lead.md`](skills/spawn-team-lead.md) — prompt template, worktree setup, error handling
 - **Project Manager:** [`skills/spawn-project-manager.md`](skills/spawn-project-manager.md) — prompt template, triggering cadence, push protocol
 
 ### Context Exhaustion Recovery
