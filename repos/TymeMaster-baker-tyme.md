@@ -155,6 +155,14 @@ Defined in `scenes/game/objects/gameplay_enums.gd`:
 - **Private methods:** Leading underscore (e.g., `_init()`, `_ready()`)
 - **Constants:** SCREAMING_SNAKE_CASE (e.g., `MAX_HEALTH`)
 
+### Branch Naming (CI-enforced)
+
+Format: `type/short-description` — with a **slash**, not a dash.
+
+- `feat/order-panel`, `fix/spawn-crash`, `docs/workflow-update`, `chore/cleanup`
+- Valid types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `ci`, `build`, `perf`, `hotfix`
+- **Agor note:** `worktreeName` parameter only allows dashes — always set `ref` separately for the correct branch name (e.g., `worktreeName="feat-order-panel"`, `ref="feat/order-panel"`)
+
 ### Commit Messages
 
 Follow conventional commit format (from `ai/workflow/CONVENTIONS.md`):
