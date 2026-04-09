@@ -77,7 +77,7 @@ This workspace is an **agent operating center** that runs inside Agor sessions. 
 - Use MCP tool: `agor_sessions_create`
 - Requires: worktreeId, agenticTool, initialPrompt
 - Creates completely new session with no parent relationship
-- Example: Creating a worker session in a new worktree
+- Example: Creating a TL session in an existing feature worktree
 
 **sessions.spawn - Child subsession (fresh context, callback to parent)**
 - Use MCP tool: `agor_sessions_spawn`

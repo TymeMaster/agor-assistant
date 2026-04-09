@@ -28,7 +28,8 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
   │     └── Layer 3: Codex Worker (Architecture Reviewer)
   │
   ├── Layer 2a: SONNET TL (per Area, post-WB) — AUTONOMOUS
-  │     │  Full ownership of one Area. Delegates to workers, commits when fallback is needed.
+  │     │  Full ownership of one Area. Delegates to worker subsessions, owns all git commits.
+  │     │  Codex workers cannot commit — TL always performs the final commit.
   │     │  Persists state to file for context exhaustion resilience.
   │     │
   │     ├── Layer 3: Codex Worker (analysis/review)
@@ -54,7 +55,7 @@ Layer 1: OPUS ORCHESTRATOR (Jarvis) — PASSIVE
 ### Skills for Spawning
 
 - **Arch Team Lead:** [`skills/spawn-arch-team-lead.md`](skills/spawn-arch-team-lead.md) — architecture phase lifecycle, Opus model relay, reviewer spawn, commit
-- **Area Team Lead:** [`skills/spawn-team-lead.md`](skills/spawn-team-lead.md) — prompt template, worktree setup, error handling
+- **Area Team Lead:** [`skills/spawn-team-lead.md`](skills/spawn-team-lead.md) — prompt template, TL session setup in existing feature worktree, error handling
 - **Project Manager:** [`skills/spawn-project-manager.md`](skills/spawn-project-manager.md) — prompt template, triggering cadence, push protocol
 
 ### Context Exhaustion Recovery
@@ -136,8 +137,9 @@ If spawn/create/prompt fails:
 
 **Step 2: Alternative Path**
 ```text
-For spawn failures:
-  - Try sessions_create in existing worktree instead
+For spawn failures (worker subsession):
+  - Retry sessions_spawn once (keeps TL genealogy intact)
+  - If retry fails: use sessions_create in the same feature worktree as last resort (breaks genealogy — log explicitly)
   - Or: do the work inline (if analytical task)
 
 For prompt failures:
@@ -239,7 +241,8 @@ Add to daily log after each check:
 **Parent-Child Relationships:**
 - Spawn subsessions for parallel research/analysis
 - Enable callback for completion notification
-- Track child session IDs in parent's daily log
+- **Orchestrator**: track TL session IDs in daily log (TL is long-lived, needs monitoring)
+- **TL**: track worker outcomes (summary + commit SHA), not worker session IDs (workers are ephemeral)
 
 **Isolation Boundaries:**
 - New feature/fix: NEW feature worktree + TL session (sessions_create) in that worktree

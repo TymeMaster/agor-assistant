@@ -95,7 +95,7 @@ For each task in order:
 5. Review the worker's output
 6. Apply any final adjustments and **commit** using CONVENTIONS.md format
 7. Report to PM (if PM session exists):
-   `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Details: [brief summary]')`
+   `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Status: [DONE/BLOCKED/IN_PROGRESS]. Details: [brief summary]')`
 8. Persist progress: update `ai/tasks/[feature-task-id]/tl-state.md` after each task
 
 ## Commit Gate
