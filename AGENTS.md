@@ -40,30 +40,31 @@ This workspace is an **agent operating center** that runs inside Agor sessions. 
 
 **You are an orchestrator session.** Your role is to delegate work, not do it directly.
 
-**For coding work:**
-- Create NEW worktree (isolated workspace)
-- Create NEW session in that worktree (fresh worker agent)
-- Let the worker session handle implementation
-- Track outcomes in your local memory
+**For new feature/fix work (initial setup):**
+- Create NEW worktree (isolated workspace) — one per feature/branch
+- Create NEW TL session in that worktree (fresh Team Lead agent)
+- TL spawns workers as **child subsessions** inside the feature worktree — no additional worktrees
+- Track TL session ID and outcomes in your local memory
 
 **For local tasks (memory updates, file reads, research):**
 - Do it yourself in this session
 - Or spawn subsession for parallel research
 - Or fork to explore alternative approaches
 
-**Key pattern:** One worktree = one session tree. Don't spawn coding subsessions in your orchestrator session.
+**Key pattern:** One feature = one worktree = one TL session. Workers are subsessions inside that TL, not separate worktrees.
 
 ### Task Delegation Rules
 
 **When to create NEW worktree + NEW session (isolation):**
-- ANY coding work (features, fixes, refactors)
-- Work that needs git branching and PRs
+- New features or fixes that need their own branch and PR
 - Work that will be reviewed/merged independently
+- Initial TL setup for a feature area
 
 **When to spawn subsession (parallel work in YOUR context):**
 - Research tasks (gather information, analyze patterns)
 - Multi-step investigations
 - Background monitoring
+- **TL worker tasks** — analysts, developers, reviewers run as subsessions inside the TL session
 
 **When to fork (reuse context, try alternatives):**
 - Explore different approaches to same problem
@@ -264,45 +265,54 @@ memory/
 
 All AI work goes through Agor MCP. Here are your most common operations:
 
-### 🚨 CRITICAL: Coding Work Requires Isolation
+### 🚨 CRITICAL: Feature Work Setup
 
-When doing ANY coding work (features, fixes, refactors):
+When starting any new feature or fix:
 
 0. **ALWAYS run rate limit pre-flight first** (`./scripts/check-rate-limit.sh`) — skip if limited
-1. **ALWAYS create NEW worktree** (not spawn in existing)
-2. **ALWAYS create NEW session** in that worktree (not spawn subsession)
+1. **ALWAYS create NEW worktree** for the feature (not in an existing unrelated worktree)
+2. **ALWAYS create the TL session** in that feature worktree using `sessions_create`
 3. **ALWAYS specify boardId** (REQUIRED - prevents orphaned worktrees)
+4. **Workers spawn as subsessions** inside the TL session — NOT as new worktrees
 
 **Wrong pattern (will cause problems):**
 ```
-❌ Don't spawn coding subsession in orchestrator:
-- Using agor_sessions_spawn with prompt="Implement feature X"
-- This creates subsession in YOUR context, not isolated
+❌ Don't create per-task worker worktrees:
+- agor_worktrees_create for each task/worker
+- This causes cherry-pick complexity and commit failures (Codex sandbox)
+
+❌ Don't spawn TL as coding subsession in orchestrator:
+- Using agor_sessions_spawn from orchestrator for implementation work
+- TL should be sessions_create in the feature worktree, not a child of orchestrator
 ```
 
-**Correct pattern (isolation):**
+**Correct pattern:**
 ```
-✅ For coding work, create isolated worktree + session:
+✅ For feature work:
 
-Step 1: Create NEW worktree
+Step 1: Create NEW feature worktree
 - Use: agor_worktrees_create
-- Parameters: repoId, worktreeName='feature-x', createBranch=true, boardId (REQUIRED)
+- Parameters: repoId, worktreeName='feat-feature-name', createBranch=true, boardId (REQUIRED)
 - Returns: worktree object with worktree_id
 
-Step 2: Create NEW session in that worktree
+Step 2: Create TL session in that worktree
 - Use: agor_sessions_create
-- Parameters: worktreeId (from step 1), agenticTool='claude-code', initialPrompt="Implement feature X"
+- Parameters: worktreeId (from step 1), agenticTool='claude-code', initialPrompt=<TL prompt>
 - Returns: session object with session_id
 
-Step 3: Track in your memory
-- Record worktree_id, session_id, and purpose in memory/agor-state/
+Step 3: TL spawns workers as child subsessions
+- TL uses: agor_sessions_spawn inside the TL session
+- Workers report output back to TL; TL commits to the worktree branch
+
+Step 4: Track in your memory
+- Record worktree_id, TL session_id, and purpose in memory/agor-state/
 ```
 
 **Why this matters:**
+- One worktree = one branch = one PR (clean git workflow)
+- TL owns commits — no cherry-pick across worktrees
+- Workers as subsessions reduces worktree proliferation
 - Prevents orphaned worktrees (invisible on boards)
-- Avoids subsession callback cascades
-- Maintains clear separation: orchestrator delegates, workers execute
-- Enables proper git workflow (one worktree = one branch = one PR)
 
 ### Worktree Management
 

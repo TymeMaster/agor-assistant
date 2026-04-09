@@ -242,7 +242,8 @@ Add to daily log after each check:
 - Track child session IDs in parent's daily log
 
 **Isolation Boundaries:**
-- Coding work: NEW worktree + NEW session (sessions_create)
+- New feature/fix: NEW feature worktree + TL session (sessions_create) in that worktree
+- Worker tasks within a feature: spawn subsession (sessions_spawn) inside TL session — NOT new worktrees
 - Research work: spawn subsession in current context
 - Alternative exploration: fork from decision point
 

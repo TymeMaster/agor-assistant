@@ -4,36 +4,40 @@
 
 **Prerequisites:**
 - Architecture and work breakdown completed for the feature
-- Area specification document exists in the worktree
+- Area specification document exists in the feature worktree
 - Rate limit pre-flight passed (see `check-rate-limit.md`)
+- Feature worktree already exists (TL runs IN the feature worktree — no separate TL worktree)
 - Board ID and repo ID known (from IDENTITY.md)
-- For baker-tyme normal feature/docs/chore work, use `origin/develop` as the source branch. Use `origin/main` only for explicit release-oriented work.
+
+---
+
+## Model
+
+The TL runs **directly in the existing feature worktree** as a `sessions_create` session. Workers are spawned as `sessions_spawn` child subsessions inside the TL's session — no additional worktrees are created.
+
+```
+Feature Worktree
+  └── TL Session (sessions_create)
+        ├── Worker: Analyst/Reviewer (sessions_spawn child)
+        ├── Worker: Developer (sessions_spawn child)
+        └── Worker: Reviewer (sessions_spawn child)
+```
+
+Key consequences:
+- TL can commit directly — no cherry-pick needed
+- Workers are subsessions; they cannot commit (Codex sandbox limitation)
+- Only the TL's session needs tracking in `memory/agor-state/`
+- Worker sessions are ephemeral — track by task outcome, not by session ID
 
 ---
 
 ## Steps
 
-### 1. Create isolated worktree for the Area
-
-```
-agor_worktrees_create(
-  repoId: "<baker-tyme repo ID>",
-  worktreeName: "<feature>-area-<N>",
-  boardId: "<main board ID>",
-  createBranch: true,
-  sourceBranch: "origin/develop"
-)
-```
-
-Record the returned `worktree_id`.
-
-For release-oriented work only, choose the release-specific source branch intentionally instead of the normal `origin/develop` baseline.
-
-### 2. Create TL session in the worktree
+### 1. Create TL session in the feature worktree
 
 ```
 agor_sessions_create(
-  worktreeId: "<worktree_id from step 1>",
+  worktreeId: "<feature worktree ID>",
   agenticTool: "claude-code",
   title: "TL: <Feature> Area <N> — <Area Name>",
   initialPrompt: "<see prompt template below>"
@@ -42,10 +46,10 @@ agor_sessions_create(
 
 Record the returned `session_id`.
 
-### 3. Track in orchestrator memory
+### 2. Track in orchestrator memory
 
 Update the daily log with:
-- TL session ID, worktree ID, area name
+- TL session ID, feature worktree ID, area name
 - Feature context (which feature, which area)
 - Timestamp
 
@@ -62,10 +66,11 @@ You are a Team Lead for [Area Name] in the [feature-name] feature of the baker-t
 
 ## Your Mission
 Complete all implementation tasks for [Area Name] as defined in the specification below.
+Work directly in this worktree. Do NOT create additional worktrees.
 
 ## Context
-- High-level architecture: `ai/tasks/[feature]-architecture.md`
-- Your Area specification: `ai/tasks/[feature]-area-[N]-tasks.md`
+- High-level architecture: `ai/tasks/[feature-task-id]/[feature-task-id]-architecture.md`
+- Your Area specification: `ai/tasks/[feature-task-id]/[feature-task-id]-area-[N]-tasks.md`
 - AI workflow rules: `ai/workflow/AI_WORKFLOW.md` and phase-specific docs in `ai/workflow/`
 - Conventions: `ai/workflow/CONVENTIONS.md`
 
@@ -74,26 +79,29 @@ Complete all implementation tasks for [Area Name] as defined in the specificatio
 - Orchestrator memory system (that's Jarvis's domain)
 
 ## How to Work
-1. Read your Area specification thoroughly
-2. For each task in order:
-   a. Run rate limit pre-flight: `./scripts/check-rate-limit.sh` — if `rejected`, stop and report
-   b. Create worker worktree: `agor_worktrees_create(repoId='[repoId]', worktreeName='[feature]-area[N]-task[M]', boardId='[boardId]', createBranch=true)`
-   c. Create worker session: `agor_sessions_create(worktreeId=<new>, agenticTool=<see below>, initialPrompt=<task prompt>)`
-      - Analysis/review tasks → agenticTool: "codex"
-      - Development tasks → agenticTool: "claude-code" (Sonnet)
-      - If spawning a Codex reviewer, state explicitly in the prompt that YOU retain final git commit responsibility
-   d. Monitor worker: check `agor_sessions_get(sessionId)` — verify `last_updated` advances
-   e. When worker is done: review output in the worker worktree
-   f. Cherry-pick or apply changes to YOUR worktree, then commit
-   g. Report to PM: `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Status: [DONE/BLOCKED/IN_PROGRESS]. Details: [brief summary]')`
-      This is mandatory. PM relies on your reports to track progress.
-3. After each completed task, persist progress to `ai/tasks/[feature]-tl-state.md`
+
+For each task in order:
+1. Run rate limit pre-flight: `./scripts/check-rate-limit.sh` — if `rejected`, stop and report
+2. Spawn worker as **child subsession** using `agor_sessions_spawn`:
+   - Analysis/planning tasks → include `agenticTool: "codex"` in the spawn prompt context
+   - Development tasks → subsession inherits your model (Sonnet)
+   - Review tasks → subsession inherits your model or use Codex; see Commit Gate below
+3. Include in the worker prompt:
+   - The specific task instructions
+   - Which files to read/modify
+   - What artifact to produce
+   - "Report your output as text in your final message so the TL can review it"
+4. Wait for the worker subsession to complete (callback or poll with `agor_sessions_get`)
+5. Review the worker's output
+6. Apply any final adjustments and **commit** using CONVENTIONS.md format
+7. Report to PM (if PM session exists):
+   `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Details: [brief summary]')`
+8. Persist progress: update `ai/tasks/[feature-task-id]/tl-state.md` after each task
 
 ## Commit Gate
-- The app workflow ends at reviewer approval and final review artifact.
-- Commit-capable reviewers may commit their own approved outputs.
-- If the reviewer is Codex, YOU retain final git commit responsibility and must say so in the reviewer prompt.
-- Codex workers cannot commit (sandbox limitation).
+- You (TL) hold the git commit responsibility for all tasks.
+- Workers produce output and report it back; you review and commit.
+- If spawning a Codex reviewer, state explicitly in the reviewer's prompt that YOU retain final git commit responsibility.
 - Use clear commit messages following CONVENTIONS.md format.
 
 ## Rate Limit Awareness
@@ -103,9 +111,9 @@ Complete all implementation tasks for [Area Name] as defined in the specificatio
 
 ## Context Exhaustion Protocol
 If your conversation becomes too long and efficiency degrades:
-1. Write comprehensive state summary to `ai/tasks/[feature]-tl-state.md`
+1. Write comprehensive state summary to `ai/tasks/[feature-task-id]/tl-state.md`
 2. Include: completed tasks, in-progress task, remaining tasks, any blockers
-3. Report: "Context exhausted, state persisted at ai/tasks/[feature]-tl-state.md"
+3. Report: "Context exhausted, state persisted at ai/tasks/[feature-task-id]/tl-state.md"
 The orchestrator will create a replacement TL with your state file as context.
 ```
 
@@ -115,10 +123,21 @@ The orchestrator will create a replacement TL with your state file as context.
 
 | Problem | Action |
 |---------|--------|
-| Worker session stuck (no progress >5 min) | Prompt worker: `agor_sessions_prompt(sessionId, mode='continue', prompt='Status?')` |
-| Worker fails after 2 prompts | Abandon worker, create replacement session |
+| Worker subsession stuck (no progress >5 min) | Prompt worker: `agor_sessions_prompt(sessionId, mode='continue', prompt='Status?')` |
+| Worker fails after 2 prompts | Abandon worker, spawn replacement subsession |
 | Rate limit hit mid-area | Persist state, stop, wait for orchestrator/PM |
-| Worktree creation fails | Retry once, then report to orchestrator |
+| Worker cannot commit | Expected — TL always commits, worker reports output only |
+
+---
+
+## What Changed vs. Old Model
+
+The previous model created a separate worktree per Area and additional worker worktrees per task. This caused:
+- Cherry-pick complexity (TL had to move changes across worktrees)
+- Workers committed to wrong branch or not at all (Codex sandbox)
+- Excessive worktree proliferation, hard to track
+
+The new model: **one feature worktree, TL as `sessions_create`, workers as `sessions_spawn` subsessions.**
 
 ---
 
@@ -126,3 +145,4 @@ The orchestrator will create a replacement TL with your state file as context.
 - `check-rate-limit.md` — rate limit pre-flight
 - `agor-state-sync.md` — optional local cache refresh
 - `spawn-project-manager.md` — PM that monitors TLs
+- `spawn-arch-team-lead.md` — Architecture phase TL (different pattern)
