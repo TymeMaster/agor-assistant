@@ -2,6 +2,8 @@
 
 > Guidance for Board Assistant when orchestrating multi-session AI workflows through Agor MCP.
 
+> **Scope of this document:** This repository defines orchestration only — how baker-tyme workflow roles are mapped onto Agor sessions, subsessions, models, and coordination patterns. The authoritative definitions of task phases, Analyst/Developer/Reviewer responsibilities, required artifacts, and quality gates live in baker-tyme under `ai/workflow/`. agor-assistant must not redefine those role semantics; it only defines how they are executed in Agor.
+
 ## 3-Layer Orchestration Model
 
 All AI work follows a 3-layer delegation model. Full design details in `memory/2026-04-04-orchestration-design.md`.

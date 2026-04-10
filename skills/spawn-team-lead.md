@@ -93,11 +93,13 @@ If you complete analysis, implementation, or review yourself without first attem
 
 ## How to Work
 
+> The following sequence reflects the baker-tyme development workflow (`ai/workflow/AI_WORKFLOW__DEVELOPMENT_TASK.md`) mapped onto Agor subsessions. Role responsibilities and required artifacts are defined there; this section specifies only how those roles are executed in Agor.
+
 For each task in order, follow this exact sequence:
 1. Run rate limit pre-flight: `./scripts/check-rate-limit.sh`
    - If `rejected`, stop and report.
 2. Spawn the Analyst as a child subsession using `agor_sessions_spawn(agenticTool="codex", ...)`.
-   - The Analyst must produce `...-implementation-plan.md`.
+   - The Analyst must produce `...-implementation-plan.md` (per baker-tyme Analyst role definition).
 3. Include in every worker prompt:
    - The specific task instructions
    - Which files to read/modify
@@ -107,21 +109,23 @@ For each task in order, follow this exact sequence:
 5. Review the Analyst's output.
 6. Do not start implementation until the Analyst subsession has completed and you have reviewed its output.
 7. Spawn the Developer as a child subsession using `agor_sessions_spawn(...)` with your default Sonnet model.
-   - The Developer must implement the change, run validations, and produce `...-implementation-summary.md`.
+   - The Developer must implement the change, run validations, and produce `...-implementation-summary.md` (per baker-tyme Developer role definition).
 8. Wait for the Developer subsession to complete (callback or poll with `agor_sessions_get`).
 9. Review the Developer's output.
 10. Do not perform code implementation yourself unless the Developer spawn failed twice and you have logged the failure in `tl-state.md`.
 11. Spawn the Reviewer as a child subsession using `agor_sessions_spawn(agenticTool="codex", ...)`.
-   - The Reviewer must produce `...-implementation-review.md` and a clear approve/reject verdict.
+    - The Reviewer must produce `...-implementation-review.md` and a clear approve/reject verdict (per baker-tyme Reviewer role definition).
 12. Wait for the Reviewer subsession to complete (callback or poll with `agor_sessions_get`).
 13. Review the Reviewer's output.
 14. Do not finalize or commit the task until the Reviewer subsession has completed and you have reviewed its verdict.
 15. Apply only final integration tweaks needed after worker outputs, then **commit** using CONVENTIONS.md format.
 16. Report to PM (if PM session exists):
-   `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Status: [DONE/BLOCKED/IN_PROGRESS]. Details: [brief summary]')`
+    `agor_sessions_prompt(sessionId='[PM_SESSION_ID]', mode='continue', prompt='TL report: [AREA_NAME] — Task [N]/[TOTAL] complete. Status: [DONE/BLOCKED/IN_PROGRESS]. Details: [brief summary]')`
 17. Persist progress: update `ai/tasks/[feature-task-id]/tl-state.md` after each worker completes.
 
 ## Artifact Ownership Rules
+> These rules reflect the baker-tyme role model (`ai/workflow/roles/development/`) mapped onto the Agor subsession structure — each role runs as a separate child subsession. This section is a reminder of session ownership, not a redefinition of role responsibilities.
+
 - Implementation plans are authored by the Analyst subsession, not by you.
 - Code changes and implementation summaries are authored by the Developer subsession, not by you.
 - Review artifacts and verdicts are authored by the Reviewer subsession, not by you.

@@ -52,21 +52,14 @@ baker-tyme uses a structured AI-assisted development workflow documented in `ai/
 
 ### Workflow Phases
 
-1. **Architecture** (`AI_WORKFLOW__ARCHITECTURE_TASK.md`)
-   - High-level technical design
-   - Roles: Architect (Opus), Reviewer (Codex)
-   
-2. **Work Breakdown** (`AI_WORKFLOW__WORK_BREAKDOWN_TASK.md`)
-   - Decompose architecture into Areas and Tasks
-   - Roles: Analyst (Codex), Reviewer (Codex)
-   
-3. **Development** (`AI_WORKFLOW__DEVELOPMENT_TASK.md`)
-   - Implementation of individual tasks
-   - Roles: Analyst (Codex), Developer (Sonnet), Reviewer (Codex)
-   
-4. **Integration Review** (`AI_WORKFLOW__INTEGRATION_REVIEW_TASK.md`)
-   - Validate completed areas or entire feature
-   - Roles: Reviewer (Codex)
+> Phase responsibilities, role definitions, and artifact requirements are specified in baker-tyme under `ai/workflow/`. The model assignments below are orchestration configuration — they belong here, not in baker-tyme.
+
+| Phase | Workflow doc | Model mapping |
+|-------|-------------|---------------|
+| **Architecture** | `AI_WORKFLOW__ARCHITECTURE_TASK.md` | Architect: Opus, Reviewer: Codex |
+| **Work Breakdown** | `AI_WORKFLOW__WORK_BREAKDOWN_TASK.md` | Analyst: Codex, Reviewer: Codex |
+| **Development** | `AI_WORKFLOW__DEVELOPMENT_TASK.md` | Analyst: Codex, Developer: Sonnet, Reviewer: Codex |
+| **Integration Review** | `AI_WORKFLOW__INTEGRATION_REVIEW_TASK.md` | Reviewer: Codex |
 
 ### Task Artifacts
 
