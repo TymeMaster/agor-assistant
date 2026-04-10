@@ -68,13 +68,15 @@ When a TL runs out of context:
 3. Orchestrator creates replacement TL with state file as context
 4. Orchestrator updates PM with new TL session ID
 
-### Commit Fallback Protocol
+### Commit Override Protocol
+
+> **Workaround:** baker-tyme workflow assigns commit responsibility to the Reviewer. In Agor, Codex sessions run in a restricted sandbox that does not allow git operations. Until Agor adds configurable sandbox modes for Codex sessions, commit ownership is transferred to the TL as described below.
 
 When TL delegates the final review to a Codex reviewer:
-1. TL tells the reviewer in the prompt that TL retains the git commit responsibility
+1. TL tells the reviewer in the prompt that — due to sandbox restrictions — the reviewer cannot commit and TL retains git commit responsibility
 2. Reviewer produces the final review artifact and approval/rejection verdict
 3. If approved, TL applies any required final adjustments and performs the git commit
-4. TL records in the summary that commit ownership was retained due to Codex sandbox limits
+4. TL records in the summary that commit ownership was overridden due to Codex sandbox limitation
 
 ---
 

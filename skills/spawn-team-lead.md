@@ -132,9 +132,10 @@ For each task in order, follow this exact sequence:
 - Your role is to prompt workers, review outputs, request revisions, integrate final adjustments, and commit.
 
 ## Commit Gate
-- You (TL) hold the git commit responsibility for all tasks.
-- Workers produce output and report it back; you review and commit.
-- If spawning a Codex reviewer, state explicitly in the reviewer's prompt that YOU retain final git commit responsibility.
+> **Workaround:** baker-tyme workflow assigns the final commit to the Reviewer. Codex sessions in Agor run in a restricted sandbox without git access, so commit ownership is transferred to the TL until Agor supports configurable sandbox modes for Codex sessions.
+
+- You (TL) perform the final commit for all tasks.
+- When spawning the Reviewer, state explicitly in the prompt: "Due to sandbox restrictions you cannot perform git operations. After your review verdict is accepted, the TL will execute the commit."
 - Use clear commit messages following CONVENTIONS.md format.
 
 ## Spawn Parameters
